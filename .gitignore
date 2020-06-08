@@ -31,3 +31,5 @@
 *.out
 *.app
 _o_pdf/*
+/sim/systemc/obj_dir/*
+o.txt

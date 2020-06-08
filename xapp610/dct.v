@@ -79,7 +79,7 @@
 ** coeeficients.
 ***********************************************************************/
 
-`timescale 1ns/1ps
+`timescale 100ps/1ps
 
 module dct ( CLK, RST, xin,dct_2d,rdy_out);
 output [11:0] dct_2d;
@@ -660,7 +660,7 @@ end
 
 /* First dct coeeficient appears at the output of the RAM1 after
 15 + 64 clk cycles. So the 2nd DCT operation starts after 79 clk cycles. */
-
+`ifndef 1D_MACRO
 always @ (posedge CLK or posedge RST)
    begin
    if (RST)
