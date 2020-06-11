@@ -126,7 +126,6 @@ wire en_ram1,en_dct2d;
 reg en_ram1reg,en_dct2d_reg;
 reg[10:0] ram1_mem[63:0],ram2_mem[63:0]; // add the following to infer block RAM in synlpicity
                                          //    synthesis syn_ramstyle = "block_ram"  //shd be within /*..*/
-
 /* 2D section */
 wire[10:0] data_out_final;
 reg[10:0] xb0_in, xb1_in, xb2_in, xb3_in, xb4_in, xb5_in, xb6_in, xb7_in;
@@ -140,7 +139,6 @@ reg toggleB;
 reg[19:0] dct2d_int1,dct2d_int2;
 reg[19:0] dct_2d_int;
 wire[11:0] dct_2d_rnd;
-
 
 /*  1D-DCT BEGIN */
 
@@ -660,7 +658,6 @@ end
 
 /* First dct coeeficient appears at the output of the RAM1 after
 15 + 64 clk cycles. So the 2nd DCT operation starts after 79 clk cycles. */
-`ifndef 1D_MACRO
 always @ (posedge CLK or posedge RST)
    begin
    if (RST)

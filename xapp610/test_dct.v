@@ -1,4 +1,4 @@
-`timescale 100ps/1ps
+`timescale 1ns/1ps
 module test_dct;
 
 parameter CLK_PERIOD = 10;
