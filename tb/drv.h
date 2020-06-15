@@ -5,16 +5,15 @@ SC_MODULE(drv){
    sc_out<sc_int<8> > xin;
    sc_in<bool> rdy_o;
    
-   sc_port<sc_fifo_out_if<pkt*> > drv_ap;
+   sc_port<sc_fifo_out_if<pkt*> > drv_f;
    
    void driver();
 
    SC_CTOR(mon){
       SC_CTHREAD(driver, clk.pos());
    }
-}
-void mon::monitor(){
-   sc_int<6> count = 0;
+};
+void drv::driver(){
    wait();
    while(true){
       pkt* p;
@@ -24,7 +23,7 @@ void mon::monitor(){
 	 xin=p->xin[i/8][i%8];
 	 wait();
       }
-      drv_ap.write(p);
+      drv_ap->write(p);
       wait(rdy_o);
       wait(!rdy_o);
    }

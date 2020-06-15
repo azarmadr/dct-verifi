@@ -6,7 +6,7 @@ SC_MODULE(mon){
    sc_in<sc_int<12> > dct;
    sc_in<bool> rdy_o;
    
-   sc_port<sc_fifo_out_if<pkt*> > mon_ap;
+   sc_port<sc_fifo_out_if<pkt*> > mon_f;
    
    void monitor();
 
@@ -14,8 +14,9 @@ SC_MODULE(mon){
       SC_THREAD(monitor);
       sensitive<<xin<<dct<<rdy_o<<clk.pos();
    }
-}
+};
 void mon::monitor(){
+   wait();
    while(true){
       pkt* p;p=new(pkt);
       for(int i=0;i<64;i++){
@@ -29,7 +30,7 @@ void mon::monitor(){
 	    wait();
 	 }
       }
-      mon_ap.write(p);
+      mon_ap->write(p);
       wait();
    }
 }

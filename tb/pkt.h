@@ -1,6 +1,6 @@
 #include "systemc.h"
 struct pkt{
-   int id;
+   //int id;
    sc_int<8>  xin [8][8];
    sc_int<12> dct [8][8];
    inline bool operator == (const pkt& rhs) const{
