@@ -11,8 +11,9 @@ void dct_calc(pkt* p){
    sc_int<12> temp [8][8];
    for(int k = 0; k<8;k++){
       for(int i=0;i<8;i++){
-	 temp[k][0] = 0;
-	 p->dct = 0;
+	 temp[k][i] = 0;
+	 p->dct[k][i] = 0;
+	 p->xin[k][i] = rand();
       }
    }
    for(int k = 0; k<8;k++){
