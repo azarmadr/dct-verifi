@@ -1,6 +1,6 @@
 # Verilated -*- Makefile -*-
 #
- default: Vtest_dct__ALL.a
+default: Vdct__ALL.a
 #
 # Constants...
 PERL = perl
@@ -30,7 +30,7 @@ CPPFLAGS += -I$(SYSTEMPERL)/src
 # -DSYSTEMPERL
 
 
-include Vtest_dct_classes.mk
+include Vdct_classes.mk
 include $(VERILATOR_ROOT)/include/verilated.mk
 
 # Local rules...
@@ -40,7 +40,7 @@ include $(VERILATOR_ROOT)/include/verilated.mk
 
 #all: $(OBJECTS)
 
-%.o: ./%.cpp
+%.o: ../../tb/%.cpp
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 

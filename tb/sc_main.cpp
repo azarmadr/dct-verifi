@@ -1,3 +1,4 @@
+#define SC_INCLUDE_DYNAMIC_PROCESSES
 #include "systemc.h"
 #include "verilated_vcd_sc.h"
 
@@ -7,18 +8,18 @@
 #include "drv.h"
 
 int sc_main(int argc, char* argv[]) {
-   Verilated::randReset(2);
-   Verilated::debug(0);
+//   Verilated::randReset(2);
+//   Verilated::debug(1);
 
    sc_clock clk("clock", 10, SC_NS);
    sc_signal<bool> rst;
    sc_signal<bool> rdy_out;
    sc_signal<bool> checker_b;
 
-   sc_signal<sc_uint< 8> > xin;
-   sc_signal<sc_uint<12> > dct_2d;
+   sc_signal<uint32_t> xin;
+   sc_signal<uint32_t> dct_2d;
 
-   sc_fifo<*pkt> mon_f(2),drv_f(2);
+   sc_fifo<pkt*> mon_f(2),drv_f(2);
 
    //_DUT
    Vdct* top = new Vdct("top");
@@ -46,11 +47,12 @@ int sc_main(int argc, char* argv[]) {
    sb_t -> sb_out(checker_b);
 
    //_connections
-   drv.drv_f(drv_f);
-   mon.mon_f(mon_f);
-   sb.mon_f(mon_f);
-   sb.drv_f(drv_f);
+   drv_t->drv_f(drv_f);
+   mon_t->mon_f(mon_f);
+   sb_t->mon_f(mon_f);
+   sb_t->drv_f(drv_f);
 
-   sc_start(0);
+   sc_start(0,SC_NS);
+   rst= 0;
    return 0;
 }

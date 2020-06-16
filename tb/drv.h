@@ -2,14 +2,14 @@
 
 SC_MODULE(drv){
    sc_in<bool> clk;
-   sc_out<sc_int<8> > xin;
+   sc_out<uint32_t> xin;
    sc_in<bool> rdy_o;
    
    sc_port<sc_fifo_out_if<pkt*> > drv_f;
    
    void driver();
 
-   SC_CTOR(mon){
+   SC_CTOR(drv){
       SC_CTHREAD(driver, clk.pos());
    }
 };
@@ -18,12 +18,12 @@ void drv::driver(){
    while(true){
       pkt* p;
       p=new(pkt);
-      p->dct_calc();
+      dct_calc(p);
       for(int i=0;i<64;i++){
-	 xin=p->xin[i/8][i%8];
+	 xin->write((uint32_t)p->xin[i/8][i%8]);
 	 wait();
       }
-      drv_ap->write(p);
+      drv_f->write(p);
       wait(rdy_o);
       wait(!rdy_o);
    }

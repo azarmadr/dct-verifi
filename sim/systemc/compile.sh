@@ -1,6 +1,9 @@
 verilator --trace -f verilator.cmd
-#cd objdir
-#make -f Vtest_dct.mk
-#make -f ../sc.mk dct.o
-#g++ -L$SYSTEMC_HOME/lib-linux64 Vtest_dct.o -o Vdct -lsystemc
-#cd ..
+cd obj_dir
+make -f Vdct.mk Vdct__ALL.a
+make -f ../sc.mk sc_main.o
+make -f ../sc.mk verilated.o
+make -f ../sc.mk verilated_vcd_c.o
+make -f ../sc.mk verilated_vcd_sc.o
+g++ -L$SYSTEMC_HOME/lib-linux64 sc_main.o verilated.o Vdct__ALL.o verilated_vcd_c.o verilated_vcd_sc.o -o Vdct -lsystemc
+cd ..

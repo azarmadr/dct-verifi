@@ -1,14 +1,17 @@
+#ifndef PKT_H
+#define PKT_H
+#define SC_INCLUDE_DYNAMIC_PROCESSES
 #include "systemc.h"
 struct pkt{
    //int id;
-   sc_int<8>  xin [8][8];
-   sc_int<12> dct [8][8];
+   sc_uint<8>  xin [8][8];
+   sc_uint<12> dct [8][8];
    inline bool operator == (const pkt& rhs) const{
       return(dct == rhs.dct && xin == rhs.xin);
    }
-}
+};
 void dct_calc(pkt* p){
-   sc_int<12> temp [8][8];
+   sc_uint<12> temp [8][8];
    for(int k = 0; k<8;k++){
       for(int i=0;i<8;i++){
 	 temp[k][i] = 0;
@@ -95,3 +98,4 @@ void dct_calc(pkt* p){
 	 - 32138*(temp[3][k] - temp[4][k]);
    }
 }
+#endif

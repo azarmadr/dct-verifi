@@ -2,8 +2,8 @@
 
 SC_MODULE(mon){
    sc_in<bool> clk;
-   sc_in<sc_int<8> > xin;
-   sc_in<sc_int<12> > dct;
+   sc_in<uint32_t> xin;
+   sc_in<uint32_t> dct;
    sc_in<bool> rdy_o;
    
    sc_port<sc_fifo_out_if<pkt*> > mon_f;
@@ -18,19 +18,20 @@ SC_MODULE(mon){
 void mon::monitor(){
    wait();
    while(true){
-      pkt* p;p=new(pkt);
+      pkt* p =new(pkt);
       for(int i=0;i<64;i++){
-	 p->xin[i/8][i%8]=xin;
+	 p->xin[i/8][i%8]=(sc_uint<8>) xin->read();
 	 wait();
       }
       if(rdy_o){
-	 wait(dct);
+	 wait();
 	 for(int i=0;i<64;i++){
+	    p->dct[i/8][i%8]=(sc_uint<12>) dct->read();
 	    p->dct[i/8][i%8]=dct;
 	    wait();
 	 }
       }
-      mon_ap->write(p);
+      mon_f->write(p);
       wait();
    }
 }
