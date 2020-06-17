@@ -1,17 +1,43 @@
 #ifndef PKT_H
 #define PKT_H
-#define SC_INCLUDE_DYNAMIC_PROCESSES
 #include "systemc.h"
 struct pkt{
    //int id;
-   sc_uint<8>  xin [8][8];
-   sc_uint<12> dct [8][8];
+   sc_int<8>  xin [8][8];
+   sc_int<12> dct [8][8];
    inline bool operator == (const pkt& rhs) const{
       return(dct == rhs.dct && xin == rhs.xin);
    }
 };
+inline ostream& operator << ( ostream& os, const pkt& p){
+   os<<endl<<"xin\t\t\t\t\t\t\t\tdct"<<endl;
+   for(int i=0;i<8;i++){
+      os<<"---\t---\t";
+   }
+   os<<endl;
+   for(int i=0;i<8;i++){
+      for(int j=0;j<8;j++){
+         os<<p.xin[i][j]<<"\t";
+      }
+      for(int j=0;j<8;j++){
+	 os<<p.dct[i][j]<<"\t";
+      }
+      os<<endl;
+   }
+   return os;
+}
+template<int T>
+inline 
+ostream& operator << ( ostream& os, const sc_int<T> (&a)[8][8]){
+   os<<endl;
+   for(int i=0;i<64;i++){
+      os<<a[i/8][i%8]<<"\t";
+      if(i%8==7) os<<endl;
+   }
+   return os;
+}
 void dct_calc(pkt* p){
-   sc_uint<12> temp [8][8];
+   sc_int<20> temp [8][8];
    for(int k = 0; k<8;k++){
       for(int i=0;i<8;i++){
 	 temp[k][i] = 0;
@@ -58,6 +84,7 @@ void dct_calc(pkt* p){
 	 + 27246*(p->xin[k][2]-p->xin[k][5])
 	 - 32128*(p->xin[k][3]-p->xin[k][4]);
    }
+   cout<<temp<<endl;
    for(int k=0;k<8;k++){
       for(int j=0;j<8;j++){
 	 p->dct[0][k] += 23170*temp[j][k];

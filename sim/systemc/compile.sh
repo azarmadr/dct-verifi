@@ -7,3 +7,4 @@ make -f ../sc.mk verilated_vcd_c.o
 make -f ../sc.mk verilated_vcd_sc.o
 g++ -L$SYSTEMC_HOME/lib-linux64 sc_main.o verilated.o Vdct__ALL.o verilated_vcd_c.o verilated_vcd_sc.o -o Vdct -lsystemc
 cd ..
+./obj_dir/Vdct

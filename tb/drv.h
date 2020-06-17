@@ -15,16 +15,18 @@ SC_MODULE(drv){
 };
 void drv::driver(){
    wait();
-   while(true){
-      pkt* p;
-      p=new(pkt);
+   bool t=true;
+   while(t){
+      pkt* p = new (pkt);
       dct_calc(p);
+      cout<<"@"<<sc_time_stamp()<<" of drv "<<*p<<endl;
       for(int i=0;i<64;i++){
 	 xin->write((uint32_t)p->xin[i/8][i%8]);
 	 wait();
       }
       drv_f->write(p);
-      wait(rdy_o);
-      wait(!rdy_o);
+      if(rdy_o) wait();
+      if(!rdy_o) wait();
+      t = false;
    }
 }

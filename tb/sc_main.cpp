@@ -8,8 +8,8 @@
 #include "drv.h"
 
 int sc_main(int argc, char* argv[]) {
-//   Verilated::randReset(2);
-//   Verilated::debug(1);
+   Verilated::randReset(2);
+   Verilated::debug(0);
 
    sc_clock clk("clock", 10, SC_NS);
    sc_signal<bool> rst;
@@ -52,7 +52,19 @@ int sc_main(int argc, char* argv[]) {
    sb_t->mon_f(mon_f);
    sb_t->drv_f(drv_f);
 
-   sc_start(0,SC_NS);
+   Verilated::traceEverOn(true);
+
+   cout << "Enabling waves...\n";
+   VerilatedVcdSc* tfp = new VerilatedVcdSc;
+   top->trace (tfp, 99);
+   tfp->open ("vl_dump.vcd");
+   tfp->flush();
+   tfp->close();
+
+   sc_start(31,SC_NS);
    rst= 0;
+   sc_start(2733,SC_NS);
+   rst= 1;
+   
    return 0;
 }
