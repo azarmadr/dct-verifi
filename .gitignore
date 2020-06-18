@@ -35,3 +35,5 @@ _o_pdf/*
 o.txt
 *.llhd
 *.vcd
+sim/sv/work/**
+transcript

@@ -275,7 +275,7 @@ always @ (posedge CLK or posedge RST)
            end
        else if (toggleA == 1'b0)
 	         begin
-	         add_sub1a <= (xa7_reg - xa0_reg); 
+	   add_sub1a <= (xa7_reg - xa0_reg); 
            add_sub2a <= (xa6_reg - xa1_reg);
            add_sub3a <= (xa5_reg - xa2_reg); 
            add_sub4a <= (xa4_reg - xa3_reg);

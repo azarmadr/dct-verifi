@@ -29,12 +29,12 @@ void mon::monitor(){
 	 wait();
       for(int i=0;i<64;i++){
 	 wait();
-	 p->xin[i/8][i%8]=(sc_int<8>) xin->read();
+	 p->xin[i/8][i%8]=(sc_uint<8>) xin->read();
       }
       mrdy.notify();
       wait(vrdy);
       for(int i=0;i<64;i++){
-	 p->dct[i/8][i%8]=(sc_int<12>) dct->read();
+	 p->dct[i/8][i%8]=(sc_uint<12>) dct->read();
 	 p->dct[i/8][i%8]=dct;
 	 wait();
       }
