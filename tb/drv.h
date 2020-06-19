@@ -17,8 +17,7 @@ SC_MODULE(drv){
 };
 void drv::driver(){
    wait();
-   bool t=true;
-   while(t){
+   while(true){
       pkt* p = new (pkt);
       dct_calc(p);
       cout<<"@"<<sc_time_stamp()<<" of drv "<<*p<<endl;
@@ -27,8 +26,7 @@ void drv::driver(){
 	 wait();
       }
       drv_f->write(p);
-      if(rdy_o) wait();
-      if(!rdy_o) wait();
-      t = false;
+      while(!rdy_o) wait();
+      while(rdy_o) wait();
    }
 }
