@@ -32,12 +32,14 @@ int sc_main(int argc, char* argv[]) {
    //_drv
    drv* drv_t = new drv("drv_t");
    drv_t -> clk(clk);
+   drv_t -> rst(rst);
    drv_t -> xin(xin);
    drv_t -> rdy_o(rdy_out);
 
    //_mon
    mon* mon_t = new mon("mon_t");
    mon_t -> clk(clk);
+   mon_t -> rst(rst);
    mon_t -> xin(xin);
    mon_t -> dct(dct_2d);
    mon_t -> rdy_o(rdy_out);
@@ -61,10 +63,14 @@ int sc_main(int argc, char* argv[]) {
    tfp->flush();
    tfp->close();
 
+   rst= 1;
+   sc_start(31,SC_NS);
+   rst= 0;
    sc_start(31,SC_NS);
    rst= 0;
    sc_start(2733,SC_NS);
    rst= 1;
+   sc_start(2733,SC_NS);
    
    return 0;
 }

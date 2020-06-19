@@ -94,7 +94,7 @@ void dct_calc(pkt* p){
 	 + 27246*(p->xin[k][2]-p->xin[k][5])
 	 - 32128*(p->xin[k][3]-p->xin[k][4]);
    }
-   cout<<temp<<endl;
+   //cout<<temp<<endl;
    for(int k=0;k<8;k++){
       for(int j=0;j<8;j++){
 	 p->dct[0][k] += 23170*temp[j][k];

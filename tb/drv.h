@@ -2,6 +2,7 @@
 
 SC_MODULE(drv){
    sc_in<bool> clk;
+   sc_in<bool> rst;
    sc_out<uint32_t> xin;
    sc_in<bool> rdy_o;
    
@@ -11,6 +12,7 @@ SC_MODULE(drv){
 
    SC_CTOR(drv){
       SC_CTHREAD(driver, clk.pos());
+      reset_signal_is(rst, true);
    }
 };
 void drv::driver(){
