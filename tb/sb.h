@@ -1,12 +1,14 @@
 #include <systemc.h>
 #include "pkt.h"
 class sb : public sc_module{public:
-   sc_out<bool> sb_out;
+   bool sb_out;
+   
    sc_port<sc_fifo_in_if<pkt*> > mon_f,drv_f;
    
    SC_HAS_PROCESS(sb);
    
    sb(sc_module_name name) : sc_module(name){
+      sb_out=false;
       SC_THREAD(checker);
    }
 
@@ -23,7 +25,7 @@ class sb : public sc_module{public:
 	    sc_spawn(&drv_p,
 		  sc_bind(&sb::get_pkt, this, sc_ref(drv_f))),
 	 SC_JOIN
-	 sb_out = mon_p == drv_p;
+	 if(*mon_p == *drv_p) sb_out=true;
 	 cout << sb_out << ": packets match status" <<endl;
 	 wait(1, SC_NS);
       }

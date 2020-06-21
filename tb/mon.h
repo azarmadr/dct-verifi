@@ -42,7 +42,7 @@ void mon::monitor(){
       mrdy.notify();
       for(int i=0;i<64;i++){
 	 wait();
-	 p->dct[i]= dct->read();
+	 p->dct[(i%8)*8+i/8]= dct->read();
       }
       mon_f->write(p);
       cout<<"@"<<sc_time_stamp()<<" "<<*p<<endl;

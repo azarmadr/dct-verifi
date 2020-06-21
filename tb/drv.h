@@ -22,7 +22,7 @@ void drv::driver(){
       dct_calc(p);
       cout<<"@"<<sc_time_stamp()<<" of drv "<<*p<<endl;
       for(int i=0;i<64;i++){
-	 xin->write((uint32_t)p->xin[i]);
+	 xin->write(p->xin[i]);
 	 wait();
       }
       drv_f->write(p);

@@ -20,7 +20,6 @@ int sc_main(int argc, char* argv[]) {
    sc_clock clk("clock", 10, SC_NS);
    sc_signal<bool> rst;
    sc_signal<bool> rdy_out;
-   sc_signal<bool> checker_b;
 
    sc_signal<sc_bv< 8> > xin;
    sc_signal<sc_bv<12> > dct_2d;
@@ -52,7 +51,6 @@ int sc_main(int argc, char* argv[]) {
 
    //_sb
    sb* sb_t = new sb("sb_t");
-   sb_t -> sb_out(checker_b);
 
    //_connections
    drv_t->drv_f(drv_f);

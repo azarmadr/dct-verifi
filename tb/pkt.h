@@ -7,26 +7,28 @@ struct pkt{
    sc_uint< 8> xin [64];
    sc_uint<12> dct [64];
    inline bool operator == (const pkt& rhs) const{
-      return(dct == rhs.dct && xin == rhs.xin);
+      for(int i=0;i<64;i++){
+	 if((xin[i]!=rhs.xin[i]) || (dct[i]!=rhs.dct[i])){
+	    cout<<"f";
+	    return false;
+	 }
+      }
+      return true;
    }
 };
-inline bool operator == (const (&l)[64],(&r)[64]) const{
-   for(int i=0;i<64;i++){
-      if(l[i]!=r[i]) return false;
-   }
-   return true;
-}
 inline ostream& operator << ( ostream& os, const pkt& p){
    os<<endl<<"xin\t\t\t\t\t\t\t\t\tdct"<<endl;
    for(int i=0;i<17;i++){
       os<<"---\t";
    }
    os<<endl;
-   for(int i=0;i<64;i++){
-      os<<std::dec<<p.xin[i]<<"\t";
-      if(i%8==0) cout<<"||\t";
+   for(int i=0;i<8;i++){
       for(int j=0;j<8;j++){
-	 os<<p.dct[i]<<"\t";
+	 os<<std::dec<<p.xin[j+i*8]<<"\t";
+      }
+      cout<<"||\t";
+      for(int j=0;j<8;j++){
+	 os<<p.dct[j+i*8]<<"\t";
       }
       os<<endl;
    }
@@ -69,28 +71,28 @@ void dct_calc(pkt* p){
    };
 
    //_init_matrices
-   for(int i=0;i<8;i++){
-      temp[k][i] = 0;
-      z[k][i] = 0;
-      p->dct[k][i] = 0;
-      p->xin[k][i] = i;//(rand() % 127);
+   for(int i=0;i<64;i++){
+      temp[i] = 0;
+      z[i] = 0;
+      p->dct[i] = 0;
+      p->xin[i] = i;//(rand() % 127);
    }
    //_1D_DCT
-   for(int i=0;i<8;i++){
+   for(int i=0;i<64;i++){
       for(int j=0;j<8;j++){
-	 z[k][i] += c_t[j][i]*p->xin[k][j];
+	 z[i] += c_t[j*8+i%8]*p->xin[(i/8)*8+j];
       }
-      z_out[k][i] = z[k][i].range(18,8);
-      if(z[k][i][7]) z_out[k][i]++;
+      z_out[i] = z[i].range(18,8);
+      if(z[i][7]) z_out[i]++;
    }
    //_2D_DCT
-   for(int i=0;i<8;i++){
+   for(int i=0;i<64;i++){
       for(int l=0;l<8;l++){
-	 temp[k][i] += c_t[l][k]*z_out[l][i];
-	 p->dct[k][i] = temp[k][i];
+	 temp[i] += c_t[l*8+i/8]*z_out[l*8+i%8];
+	 p->dct[i] = temp[i];
       }
-      p->dct[k][i] = temp[k][i].range(19,8);
-      if(temp[k][i][7]) p->dct[k][i]++;
+      p->dct[i] = temp[i].range(19,8);
+      if(temp[i][7]) p->dct[i]++;
    }
 }
 #endif
