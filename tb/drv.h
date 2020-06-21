@@ -20,7 +20,7 @@ void drv::driver(){
    while(true){
       pkt* p = new (pkt);
       dct_calc(p);
-      cout<<"@"<<sc_time_stamp()<<" of drv "<<*p<<endl;
+      cout<<"@"<<sc_time_stamp()<<"driving xin to DCT_DUT"<<endl;
       for(int i=0;i<64;i++){
 	 xin->write(p->xin[i]);
 	 wait();

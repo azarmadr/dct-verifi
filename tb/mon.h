@@ -32,8 +32,9 @@ SC_MODULE(mon){
 };
 void mon::monitor(){
    while(true){
+      wait();
+      cout<<"@"<<sc_time_stamp()<<"monitor started"<<endl;
       pkt* p =new(pkt);
-	 wait();
       for(int i=0;i<64;i++){
 	 wait();
 	 p->xin[i]= xin->read();
@@ -45,7 +46,6 @@ void mon::monitor(){
 	 p->dct[(i%8)*8+i/8]= dct->read();
       }
       mon_f->write(p);
-      cout<<"@"<<sc_time_stamp()<<" "<<*p<<endl;
       wait();
       done = true;
    }
