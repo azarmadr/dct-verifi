@@ -79,12 +79,12 @@
 ** coeeficients.
 ***********************************************************************/
 
-`timescale 100ps/1ps
+`timescale 1ns/1ps
 
 module dct ( CLK, RST, xin,dct_2d,rdy_out);
-output [11:0] dct_2d;
+output [11:0] dct_2d /* verilator sc_bv*/ ;
 input CLK, RST;
-input[7:0] xin; /* input */
+input[7:0] xin /* verilator sc_bv*/ ; /* input */
 output rdy_out;
 wire[11:0] dct_2d;
 
@@ -122,7 +122,8 @@ reg[6:0] cntr92;
 
 /* memory section */
 reg[10:0] data_out;
-wire en_ram1,en_dct2d;
+wire en_ram1 /* verilator clock_enable*/;
+wire en_dct2d  /* verilator clock_enable*/;
 reg en_ram1reg,en_dct2d_reg;
 reg[10:0] ram1_mem[63:0],ram2_mem[63:0]; // add the following to infer block RAM in synlpicity
                                          //    synthesis syn_ramstyle = "block_ram"  //shd be within /*..*/
@@ -333,16 +334,16 @@ always @ (posedge RST or posedge CLK)
 begin
     if (RST)
        begin  
-         addsub1a_comp <= 9'b0; save_sign1a <= 1'b0;
+         addsub1a_comp <= 8'b0; save_sign1a <= 1'b0;
        end
     else 
        begin
        case (add_sub1a[9])
        1'b0: begin 
-              addsub1a_comp <= add_sub1a; save_sign1a <= 1'b0; 
+              addsub1a_comp <= add_sub1a[7:0]; save_sign1a <= 1'b0; 
               end
        1'b1: begin 
-              addsub1a_comp <= (-add_sub1a) ; save_sign1a <= 1'b1; 
+              addsub1a_comp <= (-add_sub1a[7:0]) ; save_sign1a <= 1'b1; 
               end 
        endcase
        end
@@ -352,16 +353,16 @@ always @ (posedge RST or posedge CLK)
 begin
     if (RST)
        begin  
-         addsub2a_comp <= 9'b0; save_sign2a <= 1'b0;
+         addsub2a_comp <= 8'b0; save_sign2a <= 1'b0;
        end
     else 
        begin
        case (add_sub2a[9])
        1'b0: begin 
-              addsub2a_comp <= add_sub2a; save_sign2a <= 1'b0;
+              addsub2a_comp <= add_sub2a[7:0]; save_sign2a <= 1'b0;
               end
        1'b1: begin 
-              addsub2a_comp <= (-add_sub2a) ; save_sign2a <= 1'b1; 
+              addsub2a_comp <= (-add_sub2a[7:0]) ; save_sign2a <= 1'b1; 
               end 
        endcase
        end
@@ -371,16 +372,16 @@ always @ (posedge RST or posedge CLK)
 begin
     if (RST)
        begin  
-         addsub3a_comp <= 9'b0; save_sign3a <= 1'b0; 
+         addsub3a_comp <= 8'b0; save_sign3a <= 1'b0; 
        end
     else 
        begin
        case (add_sub3a[9])
        1'b0: begin 
-              addsub3a_comp <= add_sub3a; save_sign3a <= 1'b0; 
+              addsub3a_comp <= add_sub3a[7:0]; save_sign3a <= 1'b0; 
               end
        1'b1: begin 
-              addsub3a_comp <= (-add_sub3a); save_sign3a <= 1'b1; 
+              addsub3a_comp <= (-add_sub3a[7:0]); save_sign3a <= 1'b1; 
               end 
        endcase
        end
@@ -390,16 +391,16 @@ always @ (posedge RST or posedge CLK)
 begin
     if (RST)
        begin  
-         addsub4a_comp <= 9'b0; save_sign4a <= 1'b0; 
+         addsub4a_comp <= 8'b0; save_sign4a <= 1'b0; 
        end
     else 
        begin
        case (add_sub4a[9])
        1'b0: begin 
-              addsub4a_comp <= add_sub4a; save_sign4a <= 1'b0; 
+              addsub4a_comp <= add_sub4a[7:0]; save_sign4a <= 1'b0; 
               end
        1'b1: begin 
-              addsub4a_comp <= (-add_sub4a); save_sign4a <= 1'b1; 
+              addsub4a_comp <= (-add_sub4a[7:0]); save_sign4a <= 1'b1; 
               end 
        endcase
        end
@@ -420,16 +421,16 @@ always @ (posedge RST or posedge CLK)
   begin
     if (RST)
       begin
-        p1a <= 18'b0; p2a <= 18'b0; p3a <= 18'b0; p4a <= 18'b0; indexi<= 7;
+        p1a <= 19'b0; p2a <= 19'b0; p3a <= 19'b0; p4a <= 19'b0; indexi<= 7;
       end /* p*a is extended to one more bit to take into acoount the sign */
     else if (i_wait == 2'b00)
       begin
    
         
-        p1a <= (save_sign1a ^ memory1a[7]) ? (-p1a_all[15:0]) :(p1a_all[15:0]);
-        p2a <= (save_sign2a ^ memory2a[7]) ? (-p2a_all[15:0]) :(p2a_all[15:0]);
-        p3a <= (save_sign3a ^ memory3a[7]) ? (-p3a_all[15:0]) :(p3a_all[15:0]);
-        p4a <= (save_sign4a ^ memory4a[7]) ? (-p4a_all[15:0]) :(p4a_all[15:0]);
+        p1a <= (save_sign1a ^ memory1a[7]) ? (-{3'b0,p1a_all[15:0]}) :({3'b0,p1a_all[15:0]});
+        p2a <= (save_sign2a ^ memory2a[7]) ? (-{3'b0,p2a_all[15:0]}) :({3'b0,p2a_all[15:0]});
+        p3a <= (save_sign3a ^ memory3a[7]) ? (-{3'b0,p3a_all[15:0]}) :({3'b0,p3a_all[15:0]});
+        p4a <= (save_sign4a ^ memory4a[7]) ? (-{3'b0,p4a_all[15:0]}) :({3'b0,p4a_all[15:0]});
         
 
         if (indexi == 7)
@@ -601,33 +602,33 @@ always @ (posedge CLK or posedge RST)
 
 initial
 begin
-ram2_mem[0] <= 16'b0; ram2_mem[1] <= 16'b0; ram2_mem[2] <= 16'b0; ram2_mem[3] <= 16'b0; ram2_mem[4] <= 16'b0;
-ram2_mem[5] <= 16'b0; ram2_mem[6] <= 16'b0; ram2_mem[7] <= 16'b0; ram2_mem[8] <= 16'b0; ram2_mem[9] <= 16'b0;
-ram2_mem[10] <= 16'b0; ram2_mem[11] <= 16'b0; ram2_mem[12] <= 16'b0; ram2_mem[13] <= 16'b0; ram2_mem[14] <= 16'b0;
-ram2_mem[15] <= 16'b0; ram2_mem[16] <= 16'b0; ram2_mem[17] <= 16'b0; ram2_mem[18] <= 16'b0; ram2_mem[19] <= 16'b0;
-ram2_mem[20] <= 16'b0; ram2_mem[21] <= 16'b0; ram2_mem[22] <= 16'b0; ram2_mem[23] <= 16'b0; ram2_mem[24] <= 16'b0;
-ram2_mem[25] <= 16'b0; ram2_mem[26] <= 16'b0; ram2_mem[27] <= 16'b0; ram2_mem[28] <= 16'b0; ram2_mem[29] <= 16'b0;
-ram2_mem[30] <= 16'b0; ram2_mem[31] <= 16'b0; ram2_mem[32] <= 16'b0; ram2_mem[33] <= 16'b0; ram2_mem[34] <= 16'b0;
-ram2_mem[35] <= 16'b0; ram2_mem[36] <= 16'b0; ram2_mem[37] <= 16'b0; ram2_mem[38] <= 16'b0; ram2_mem[39] <= 16'b0;
-ram2_mem[40] <= 16'b0; ram2_mem[41] <= 16'b0; ram2_mem[42] <= 16'b0; ram2_mem[43] <= 16'b0; ram2_mem[44] <= 16'b0;
-ram2_mem[45] <= 16'b0; ram2_mem[46] <= 16'b0; ram2_mem[47] <= 16'b0; ram2_mem[48] <= 16'b0; ram2_mem[49] <= 16'b0;
-ram2_mem[50] <= 16'b0; ram2_mem[51] <= 16'b0; ram2_mem[52] <= 16'b0; ram2_mem[53] <= 16'b0; ram2_mem[54] <= 16'b0;
-ram2_mem[55] <= 16'b0; ram2_mem[56] <= 16'b0; ram2_mem[57] <= 16'b0; ram2_mem[58] <= 16'b0; ram2_mem[59] <= 16'b0;
-ram2_mem[60] <= 16'b0; ram2_mem[61] <= 16'b0; ram2_mem[62] <= 16'b0; ram2_mem[63] <= 16'b0;
+ram2_mem[0] = 11'b0; ram2_mem[1] = 11'b0; ram2_mem[2] = 11'b0; ram2_mem[3] = 11'b0; ram2_mem[4] = 11'b0;
+ram2_mem[5] = 11'b0; ram2_mem[6] = 11'b0; ram2_mem[7] = 11'b0; ram2_mem[8] = 11'b0; ram2_mem[9] = 11'b0;
+ram2_mem[10] = 11'b0; ram2_mem[11] = 11'b0; ram2_mem[12] = 11'b0; ram2_mem[13] = 11'b0; ram2_mem[14] = 11'b0;
+ram2_mem[15] = 11'b0; ram2_mem[16] = 11'b0; ram2_mem[17] = 11'b0; ram2_mem[18] = 11'b0; ram2_mem[19] = 11'b0;
+ram2_mem[20] = 11'b0; ram2_mem[21] = 11'b0; ram2_mem[22] = 11'b0; ram2_mem[23] = 11'b0; ram2_mem[24] = 11'b0;
+ram2_mem[25] = 11'b0; ram2_mem[26] = 11'b0; ram2_mem[27] = 11'b0; ram2_mem[28] = 11'b0; ram2_mem[29] = 11'b0;
+ram2_mem[30] = 11'b0; ram2_mem[31] = 11'b0; ram2_mem[32] = 11'b0; ram2_mem[33] = 11'b0; ram2_mem[34] = 11'b0;
+ram2_mem[35] = 11'b0; ram2_mem[36] = 11'b0; ram2_mem[37] = 11'b0; ram2_mem[38] = 11'b0; ram2_mem[39] = 11'b0;
+ram2_mem[40] = 11'b0; ram2_mem[41] = 11'b0; ram2_mem[42] = 11'b0; ram2_mem[43] = 11'b0; ram2_mem[44] = 11'b0;
+ram2_mem[45] = 11'b0; ram2_mem[46] = 11'b0; ram2_mem[47] = 11'b0; ram2_mem[48] = 11'b0; ram2_mem[49] = 11'b0;
+ram2_mem[50] = 11'b0; ram2_mem[51] = 11'b0; ram2_mem[52] = 11'b0; ram2_mem[53] = 11'b0; ram2_mem[54] = 11'b0;
+ram2_mem[55] = 11'b0; ram2_mem[56] = 11'b0; ram2_mem[57] = 11'b0; ram2_mem[58] = 11'b0; ram2_mem[59] = 11'b0;
+ram2_mem[60] = 11'b0; ram2_mem[61] = 11'b0; ram2_mem[62] = 11'b0; ram2_mem[63] = 11'b0;
  
-ram1_mem[0] <= 16'b0; ram1_mem[1] <= 16'b0; ram1_mem[2] <= 16'b0; ram1_mem[3] <= 16'b0; ram1_mem[4] <= 16'b0;
-ram1_mem[5] <= 16'b0; ram1_mem[6] <= 16'b0; ram1_mem[7] <= 16'b0; ram1_mem[8] <= 16'b0; ram1_mem[9] <= 16'b0;
-ram1_mem[10] <= 16'b0; ram1_mem[11] <= 16'b0; ram1_mem[12] <= 16'b0; ram1_mem[13] <= 16'b0; ram1_mem[14] <= 16'b0;
-ram1_mem[15] <= 16'b0; ram1_mem[16] <= 16'b0; ram1_mem[17] <= 16'b0; ram1_mem[18] <= 16'b0; ram1_mem[19] <= 16'b0;
-ram1_mem[20] <= 16'b0; ram1_mem[21] <= 16'b0; ram1_mem[22] <= 16'b0; ram1_mem[23] <= 16'b0; ram1_mem[24] <= 16'b0;
-ram1_mem[25] <= 16'b0; ram1_mem[26] <= 16'b0; ram1_mem[27] <= 16'b0; ram1_mem[28] <= 16'b0; ram1_mem[29] <= 16'b0;
-ram1_mem[30] <= 16'b0; ram1_mem[31] <= 16'b0; ram1_mem[32] <= 16'b0; ram1_mem[33] <= 16'b0; ram1_mem[34] <= 16'b0;
-ram1_mem[35] <= 16'b0; ram1_mem[36] <= 16'b0; ram1_mem[37] <= 16'b0; ram1_mem[38] <= 16'b0; ram1_mem[39] <= 16'b0;
-ram1_mem[40] <= 16'b0; ram1_mem[41] <= 16'b0; ram1_mem[42] <= 16'b0; ram1_mem[43] <= 16'b0; ram1_mem[44] <= 16'b0;
-ram1_mem[45] <= 16'b0; ram1_mem[46] <= 16'b0; ram1_mem[47] <= 16'b0; ram1_mem[48] <= 16'b0; ram1_mem[49] <= 16'b0;
-ram1_mem[50] <= 16'b0; ram1_mem[51] <= 16'b0; ram1_mem[52] <= 16'b0; ram1_mem[53] <= 16'b0; ram1_mem[54] <= 16'b0;
-ram1_mem[55] <= 16'b0; ram1_mem[56] <= 16'b0; ram1_mem[57] <= 16'b0; ram1_mem[58] <= 16'b0; ram1_mem[59] <= 16'b0;
-ram1_mem[60] <= 16'b0; ram1_mem[61] <= 16'b0; ram1_mem[62] <= 16'b0; ram1_mem[63] <= 16'b0;
+ram1_mem[0] = 11'b0; ram1_mem[1] = 11'b0; ram1_mem[2] = 11'b0; ram1_mem[3] = 11'b0; ram1_mem[4] = 11'b0;
+ram1_mem[5] = 11'b0; ram1_mem[6] = 11'b0; ram1_mem[7] = 11'b0; ram1_mem[8] = 11'b0; ram1_mem[9] = 11'b0;
+ram1_mem[10] = 11'b0; ram1_mem[11] = 11'b0; ram1_mem[12] = 11'b0; ram1_mem[13] = 11'b0; ram1_mem[14] = 11'b0;
+ram1_mem[15] = 11'b0; ram1_mem[16] = 11'b0; ram1_mem[17] = 11'b0; ram1_mem[18] = 11'b0; ram1_mem[19] = 11'b0;
+ram1_mem[20] = 11'b0; ram1_mem[21] = 11'b0; ram1_mem[22] = 11'b0; ram1_mem[23] = 11'b0; ram1_mem[24] = 11'b0;
+ram1_mem[25] = 11'b0; ram1_mem[26] = 11'b0; ram1_mem[27] = 11'b0; ram1_mem[28] = 11'b0; ram1_mem[29] = 11'b0;
+ram1_mem[30] = 11'b0; ram1_mem[31] = 11'b0; ram1_mem[32] = 11'b0; ram1_mem[33] = 11'b0; ram1_mem[34] = 11'b0;
+ram1_mem[35] = 11'b0; ram1_mem[36] = 11'b0; ram1_mem[37] = 11'b0; ram1_mem[38] = 11'b0; ram1_mem[39] = 11'b0;
+ram1_mem[40] = 11'b0; ram1_mem[41] = 11'b0; ram1_mem[42] = 11'b0; ram1_mem[43] = 11'b0; ram1_mem[44] = 11'b0;
+ram1_mem[45] = 11'b0; ram1_mem[46] = 11'b0; ram1_mem[47] = 11'b0; ram1_mem[48] = 11'b0; ram1_mem[49] = 11'b0;
+ram1_mem[50] = 11'b0; ram1_mem[51] = 11'b0; ram1_mem[52] = 11'b0; ram1_mem[53] = 11'b0; ram1_mem[54] = 11'b0;
+ram1_mem[55] = 11'b0; ram1_mem[56] = 11'b0; ram1_mem[57] = 11'b0; ram1_mem[58] = 11'b0; ram1_mem[59] = 11'b0;
+ram1_mem[60] = 11'b0; ram1_mem[61] = 11'b0; ram1_mem[62] = 11'b0; ram1_mem[63] = 11'b0;
  
 end
 
@@ -764,10 +765,10 @@ begin
        begin
        case (add_sub1b[11])
        1'b0: begin 
-              addsub1b_comp <= add_sub1b; save_sign1b <= 1'b0; 
+              addsub1b_comp <= add_sub1b[10:0]; save_sign1b <= 1'b0; 
               end
        1'b1: begin 
-              addsub1b_comp <= (-add_sub1b) ; save_sign1b <= 1'b1; 
+              addsub1b_comp <= (-add_sub1b[10:0]) ; save_sign1b <= 1'b1; 
               end 
        endcase
        end
@@ -783,10 +784,10 @@ begin
        begin
        case (add_sub2b[11])
        1'b0: begin 
-              addsub2b_comp <= add_sub2b; save_sign2b <= 1'b0; 
+              addsub2b_comp <= add_sub2b[10:0]; save_sign2b <= 1'b0; 
               end
        1'b1: begin 
-              addsub2b_comp <= (-add_sub2b) ; save_sign2b <= 1'b1; 
+              addsub2b_comp <= (-add_sub2b[10:0]) ; save_sign2b <= 1'b1; 
               end 
        endcase
        end
@@ -802,10 +803,10 @@ begin
        begin
        case (add_sub3b[11])
        1'b0: begin 
-              addsub3b_comp <= add_sub3b; save_sign3b <= 1'b0; 
+              addsub3b_comp <= add_sub3b[10:0]; save_sign3b <= 1'b0; 
               end
        1'b1: begin 
-              addsub3b_comp <= (-add_sub3b) ; save_sign3b <= 1'b1; 
+              addsub3b_comp <= (-add_sub3b[10:0]) ; save_sign3b <= 1'b1; 
               end 
        endcase
        end
@@ -821,10 +822,10 @@ begin
        begin
        case (add_sub4b[11])
        1'b0: begin 
-              addsub4b_comp <= add_sub4b; save_sign4b <= 1'b0; 
+              addsub4b_comp <= add_sub4b[10:0]; save_sign4b <= 1'b0; 
               end
        1'b1: begin 
-              addsub4b_comp <= (-add_sub4b) ; save_sign4b <= 1'b1; 
+              addsub4b_comp <= (-add_sub4b[10:0]) ; save_sign4b <= 1'b1; 
               end 
        endcase
        end
@@ -851,10 +852,10 @@ always @ (posedge RST or posedge CLK)
       begin
   
         
-        p1b <= (save_sign1b ^ memory1a[7]) ? (-p1b_all[17:0]) :(p1b_all[17:0]);
-        p2b <= (save_sign2b ^ memory2a[7]) ? (-p2b_all[17:0]) :(p2b_all[17:0]);
-        p3b <= (save_sign3b ^ memory3a[7]) ? (-p3b_all[17:0]) :(p3b_all[17:0]);
-        p4b <= (save_sign4b ^ memory4a[7]) ? (-p4b_all[17:0]) :(p4b_all[17:0]);
+        p1b <= (save_sign1b ^ memory1a[7]) ? (-{2'b0,p1b_all[17:0]}) :({2'b0,p1b_all[17:0]});
+        p2b <= (save_sign2b ^ memory2a[7]) ? (-{2'b0,p2b_all[17:0]}) :({2'b0,p2b_all[17:0]});
+        p3b <= (save_sign3b ^ memory3a[7]) ? (-{2'b0,p3b_all[17:0]}) :({2'b0,p3b_all[17:0]});
+        p4b <= (save_sign4b ^ memory4a[7]) ? (-{2'b0,p4b_all[17:0]}) :({2'b0,p4b_all[17:0]});
         end
   end
 /*always @ (posedge RST or posedge CLK)
@@ -913,9 +914,9 @@ always @ (posedge CLK or posedge RST)
    begin
    if (RST)
        begin
-       cntr92 <= 8'b0;
+       cntr92 <= 7'b0;
        end
-   else if (cntr92 < 8'b1011110)
+   else if (cntr92 < 7'b1011110)
        begin
        cntr92 <= cntr92 + 1;
        end
@@ -925,8 +926,12 @@ always @ (posedge CLK or posedge RST)
        end
    end
 
-assign rdy_out = (cntr92 == 8'b1011110) ? 1'b1 : 1'b0;
+assign rdy_out = (cntr92 == 7'b1011110) ? 1'b1 : 1'b0;
 
+initial begin
+   $dumpfile("verilog.vcd");
+   $dumpvars(0,dct);
+end
 endmodule
 //module ADSU8 (A, B, ADD,CI,S,OFL,CO); // synthesis syn_black_box
 /*input[7:0]  A,B;

@@ -47,7 +47,7 @@ begin/*
    #10 xin <= 8'h2f;#10 xin <= 8'h13;#10 xin <= 8'h25;#10 xin <= 8'h12;
    #10 xin <= 8'h42;#10 xin <= 8'h0e;#10 xin <= 8'h3d;#10 xin <= 8'h68;
 
-   #930;//
+   #930;/*
    #15 xin <= 8'h67;#10 xin <= 8'hc6;#10 xin <= 8'h69;#10 xin <= 8'h73;
    #10 xin <= 8'h51;#10 xin <= 8'hff;#10 xin <= 8'h4a;#10 xin <= 8'hec;
 
@@ -74,31 +74,31 @@ begin/*
 
    #930;*/
 
-		  #15 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;
-		  #10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;
+		  #15 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;
+		  #10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;
 
-		  #10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;
-		  #10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;
+		  #10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;
+		  #10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;
 
-		  #10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;
-		  #10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;
+		  #10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;
+		  #10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;
 
-		  #10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;
-		  #10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;
+		  #10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;
+		  #10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;
 
-		  #10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;
-		  #10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;
+		  #10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;
+		  #10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;
 
-		  #10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;
-		  #10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;
+		  #10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;
+		  #10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;
 
-		  #10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;
-		  #10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;
+		  #10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;
+		  #10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;
 
-		  #10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;
-		  #10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;#10 xin <= 8'h01;
+		  #10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;
+		  #10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;#10 xin <= 8'h03;
 
-   #930;/*
+   #830;/*
 		  #15 xin <= 8'h28;#10 xin <= 8'h21;#10 xin <= 8'h21;#10 xin <= 8'h16;
 		  #10 xin <= 8'h1A;#10 xin <= 8'h28;#10 xin <= 8'h24;#10 xin <= 8'h1A;
 
@@ -205,9 +205,9 @@ end
 
 //initial $monitor($time, " xin = %h",xin," dct=%d",dct_2d);
 always @(dct_2d)begin
-   if((j%8)==1) $display();
+   if((j%8)==0) $display();
    if(j==0) $display();
-   if(j>=-10) $write(" %d ",dct_2d);
+   if(j>=0) $write(" %d ",dct_2d);
    /*if(i==53)begin
       i=i+1;
       $write("37\t");

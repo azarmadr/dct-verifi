@@ -3,8 +3,8 @@
 SC_MODULE(mon){
    sc_in<bool> clk;
    sc_in<bool> rst;
-   sc_in<uint32_t> xin;
-   sc_in<uint32_t> dct;
+   sc_in<sc_bv< 8> > xin;
+   sc_in<sc_bv<12> > dct;
    sc_in<bool> rdy_o;
    
    sc_event mrdy;
@@ -12,12 +12,16 @@ SC_MODULE(mon){
 
    sc_port<sc_fifo_out_if<pkt*> > mon_f;
    
+   bool done;
+
    void monitor();
    void xin_m();
    void dct_m();
    void Vrdy();
 
    SC_CTOR(mon){
+      done = false;
+
       SC_CTHREAD(monitor,clk.pos());
       reset_signal_is(rst, true);
       m_thread=sc_get_current_process_handle();
@@ -32,18 +36,18 @@ void mon::monitor(){
 	 wait();
       for(int i=0;i<64;i++){
 	 wait();
-	 p->xin[i/8][i%8]= (sc_int<8>)xin->read();
+	 p->xin[i]= xin->read();
       }
       //while(!rdy_o) wait();
       mrdy.notify();
       for(int i=0;i<64;i++){
 	 wait();
-	 p->dct[i/8][i%8]= (sc_int<12>)dct->read();
-	 p->dct[i/8][i%8]=dct;
+	 p->dct[i]= dct->read();
       }
       mon_f->write(p);
       cout<<"@"<<sc_time_stamp()<<" "<<*p<<endl;
       wait();
+      done = true;
    }
 }
 void mon::Vrdy(){

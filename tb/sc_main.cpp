@@ -1,5 +1,11 @@
 #define SC_INCLUDE_DYNAMIC_PROCESSES
+#include <stdio.h>
+#include <iostream>
+#include <sys/times.h>
+#include <sys/stat.h>
+
 #include "systemc.h"
+#include "verilated.h"
 #include "verilated_vcd_sc.h"
 
 #include "Vdct.h"
@@ -16,8 +22,8 @@ int sc_main(int argc, char* argv[]) {
    sc_signal<bool> rdy_out;
    sc_signal<bool> checker_b;
 
-   sc_signal<uint32_t> xin;
-   sc_signal<uint32_t> dct_2d;
+   sc_signal<sc_bv< 8> > xin;
+   sc_signal<sc_bv<12> > dct_2d;
 
    sc_fifo<pkt*> mon_f(2),drv_f(2);
 
@@ -56,21 +62,30 @@ int sc_main(int argc, char* argv[]) {
 
    Verilated::traceEverOn(true);
 
+   rst= 1;
+   sc_start(20,SC_NS);
+
    cout << "Enabling waves...\n";
    VerilatedVcdSc* tfp = new VerilatedVcdSc;
    top->trace (tfp, 99);
-   tfp->open ("vl_dump.vcd");
-   tfp->flush();
-   tfp->close();
+   tfp->open ("./vl.vcd");
 
-   rst= 1;
-   sc_start(31,SC_NS);
-   rst= 0;
-   sc_start(31,SC_NS);
-   rst= 0;
-   sc_start(2733,SC_NS);
-   rst= 1;
-   sc_start(2733,SC_NS);
+   while(!mon_t->done){
+      tfp->flush();
+
+      rst= 0;
+      sc_start(1,SC_NS);/*
+      rst= 0;
+      sc_start(2733,SC_NS);
+      rst= 1;
+      sc_start(2733,SC_NS);*/
+   }
    
+   top->final();
+   tfp->close();
+   
+   delete top;
+   top = NULL;
+
    return 0;
 }

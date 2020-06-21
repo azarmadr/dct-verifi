@@ -3,7 +3,7 @@
 SC_MODULE(drv){
    sc_in<bool> clk;
    sc_in<bool> rst;
-   sc_out<uint32_t> xin;
+   sc_out<sc_bv< 8> > xin;
    sc_in<bool> rdy_o;
    
    sc_port<sc_fifo_out_if<pkt*> > drv_f;
@@ -22,7 +22,7 @@ void drv::driver(){
       dct_calc(p);
       cout<<"@"<<sc_time_stamp()<<" of drv "<<*p<<endl;
       for(int i=0;i<64;i++){
-	 xin->write((uint32_t)p->xin[i/8][i%8]);
+	 xin->write((uint32_t)p->xin[i]);
 	 wait();
       }
       drv_f->write(p);
