@@ -9,7 +9,6 @@ struct pkt{
    inline bool operator == (const pkt& rhs) const{
       for(int i=0;i<64;i++){
 	 if((xin[i]!=rhs.xin[i]) || (dct[i]!=rhs.dct[i])){
-	    cout<<"f";
 	    return false;
 	 }
       }
@@ -75,7 +74,7 @@ void dct_calc(pkt* p){
       temp[i] = 0;
       z[i] = 0;
       p->dct[i] = 0;
-      p->xin[i] = i;//(rand() % 127);
+      p->xin[i] =(rand() % 127);
    }
    //_1D_DCT
    for(int i=0;i<64;i++){
@@ -89,7 +88,6 @@ void dct_calc(pkt* p){
    for(int i=0;i<64;i++){
       for(int l=0;l<8;l++){
 	 temp[i] += c_t[l*8+i/8]*z_out[l*8+i%8];
-	 p->dct[i] = temp[i];
       }
       p->dct[i] = temp[i].range(19,8);
       if(temp[i][7]) p->dct[i]++;

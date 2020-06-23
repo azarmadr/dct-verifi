@@ -24,7 +24,9 @@ int sc_main(int argc, char* argv[]) {
    sc_signal<sc_bv< 8> > xin;
    sc_signal<sc_bv<12> > dct_2d;
 
-   sc_fifo<pkt*> mon_f(2),drv_f(2);
+   sc_fifo<pkt*> mon_f(3),drv_f(3);
+
+   int count;
 
    //_DUT
    Vdct* top = new Vdct("top");
@@ -58,9 +60,13 @@ int sc_main(int argc, char* argv[]) {
    sb_t->mon_f(mon_f);
    sb_t->drv_f(drv_f);
 
+   srand(time(0));
+   //_WAVES
    Verilated::traceEverOn(true);
 
    rst= 1;
+   count = 3;
+   sb_t->count = count;
    sc_start(20,SC_NS);
 
    cout << "Enabling waves...\n";
@@ -68,7 +74,7 @@ int sc_main(int argc, char* argv[]) {
    top->trace (tfp, 99);
    tfp->open ("./vl.vcd");
 
-   while(!mon_t->done){
+   while(!sb_t->done){
       tfp->flush();
 
       rst= 0;
