@@ -60,7 +60,7 @@ The inputs are 8 bits wide and the 2d-dct ouputs are 9 bits wide.
    1clk to get absolute value,
    1 clk for multiplication,
    2 clk for the final adder.
-     total = 14 clks to get the 1st z_out value.
+  total = 14 clks to get the 1st z_out value.
   Every subsequent clk gives out the next z_out value.
   So to get all the 64 values we need  11+63=74 clks.
 
