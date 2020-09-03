@@ -34,12 +34,12 @@
 **              WHATSOEVER AND XILINX SPECIFICALLY DISCLAIMS ANY 
 **              IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR
 **              A PARTICULAR PURPOSE, OR AGAINST INFRINGEMENT.
-** Module: dct8x8 : 
+Module: dct8x8 : 
 
-** A 1D-DCT is implemented on the input pixels first. The output of this,
-   called  the intermediate value, is stored in a RAM.
-** The 2nd 1D-DCT operation is done on this stored value to give the final 2D-DCT ouput dct_2d. 
-** The inputs are 8 bits wide and the 2d-dct ouputs are 9 bits wide.
+A 1D-DCT is implemented on the input pixels first. 
+The output of this, called  the intermediate value, is stored in a RAM.
+The 2nd 1D-DCT operation is done on this stored value to give the final 2D-DCT ouput dct_2d. 
+The inputs are 8 bits wide and the 2d-dct ouputs are 9 bits wide.
 
 1st 1D section:
   The input signals are taken one pixel at a time in the order x00 to x07, x10 to x17 and so on upto x77.
