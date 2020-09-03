@@ -18,9 +18,9 @@ VM_SC_TARGET_ARCH = linux64
 VM_PREFIX = Vdct
 VM_MODPREFIX = Vdct
 VM_USER_CLASSES = \
-		  #
+
 VM_USER_DIR = \
-	      #
+
 
 CPPFLAGS += -I..
 CPPFLAGS += -I.
@@ -45,4 +45,3 @@ include $(VERILATOR_ROOT)/include/verilated.mk
 
 
 # Verilated -*- Makefile -*-
-

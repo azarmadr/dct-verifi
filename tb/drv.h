@@ -6,7 +6,7 @@ SC_MODULE(drv){
    sc_in<bool> rdy_o;
 
    sc_port<sc_fifo_out_if<pkt*> > drv_f;
-   
+
    void driver();
 
    SC_CTOR(drv){
