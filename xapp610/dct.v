@@ -80,7 +80,7 @@ Storage / RAM section
   The second 1D implementation is the same as the 1st 1D implementation with the inputs now coming from either RAM1 or RAM2.
   Also, the inputs are read in one column at a time in the order z00 to z70, z10 to z70 upto z77. 
   The oupts from the adder in the 2nd section are the 2D-DCT coeeficients.
-********************************************************************/
+****************************************************************************************************************************************/
 
 `timescale 1ns/1ps
 
