@@ -83,10 +83,8 @@ Storage / RAM section
 
 `timescale 1ns/1ps
 
-module dct ( CLK, RST, xin,dct_2d,rdy_out,z_out,z_out_int);
+module dct ( CLK, RST, xin,dct_2d,rdy_out);
 output [11:0] dct_2d /* verilator sc_bv*/ ;
-output [10:0] z_out /*verilator sc_bv*/;
-output [18:0] z_out_int /*verilator sc_bv*/;
 input CLK, RST;
 input[7:0] xin /* verilator sc_bv*/ ; /* input */
 output rdy_out;
@@ -102,15 +100,13 @@ is 127. If all the values in a row are 127, the max value of the product terms
 would be (127*8)*(23170/256) and that of z_out_int would be (127*8)*23170/65536.
 This value divided by 2raised to 16 is equivalent to ignoring the 16 lsb bits of the value */
 
-reg[7:0] xa0_in,         xa1_in,         xa2_in,         xa3_in;
-reg[7:0] xa4_in,         xa5_in,         xa6_in,         xa7_in;
-reg[8:0] xa0_reg,        xa1_reg,        xa2_reg,        xa3_reg;
-reg[8:0] xa4_reg,        xa5_reg,        xa6_reg,        xa7_reg;
-reg[9:0] add_sub1a,      add_sub2a,      add_sub3a,      add_sub4a;
-reg[8:0] addsub1a_comp,  addsub2a_comp,  addsub3a_comp,  addsub4a_comp;
-reg save_sign1a,         save_sign2a,    save_sign3a,    save_sign4a;
-reg[18:0] p1a,           p2a,            p3a,            p4a;
-wire[35:0] p1a_all,      p2a_all,        p3a_all,        p4a_all;
+reg[7:0] xa0_in, xa1_in, xa2_in, xa3_in, xa4_in, xa5_in, xa6_in, xa7_in;
+reg[8:0] xa0_reg, xa1_reg, xa2_reg, xa3_reg, xa4_reg, xa5_reg, xa6_reg, xa7_reg;
+reg[7:0] addsub1a_comp,addsub2a_comp,addsub3a_comp,addsub4a_comp;
+reg[9:0] add_sub1a,add_sub2a,add_sub3a,add_sub4a;
+reg save_sign1a, save_sign2a, save_sign3a, save_sign4a;
+reg[18:0] p1a,p2a,p3a,p4a;
+wire[35:0] p1a_all,p2a_all,p3a_all,p4a_all;
 reg[1:0] i_wait;
 reg toggleA;
 reg[18:0] z_out_int1,z_out_int2;
@@ -151,113 +147,97 @@ wire[11:0] dct_2d_rnd;
 
 // store  1D-DCT constant coeeficient values for multipliers */
 
-always @ (posedge RST or posedge CLK)
-   begin
-   if (RST)
-       begin
-       memory1a <= 8'd0; memory2a <= 8'd0; memory3a <= 8'd0; memory4a <= 8'd0;
-       end
-   else
-       begin
-	     case (indexi)
-         0 : begin memory1a <= 8'd91;
-                   memory2a <= 8'd91;
-                   memory3a <= 8'd91;
-                   memory4a <= 8'd91;end
-         1 : begin memory1a <= 8'd126;
-                   memory2a <= 8'd106;
-                   memory3a <= 8'd71;
-                   memory4a <= 8'd25;end
-         2 : begin memory1a <= 8'd118;
-                   memory2a <= 8'd49;
-                   memory3a[7] <= 1'b1; memory3a[6:0] <= 7'd49;//-8'd49;
-                   memory4a[7] <= 1'b1; memory4a[6:0] <= 7'd118;// end -8'd118;end
-                   end
-         3 : begin memory1a <= 8'd106;
-                   memory2a[7] <= 1'b1; memory2a[6:0] <= 7'd25;//-8'd25;
-                   memory3a[7] <= 1'b1; memory3a[6:0] <= 7'd126;//-8'd126;
-                   memory4a[7] <= 1'b1; memory4a[6:0] <= 7'd71;end//-8'd71;end
-         4 : begin memory1a <= 8'd91;
-                   memory2a[7] <= 1'b1; memory2a[6:0] <= 7'd91;//-8'd91;
-                   memory3a[7] <= 1'b1; memory3a[6:0] <= 7'd91;//-8'd91;
-                   memory4a <= 8'd91;end
-         5 : begin memory1a <= 8'd71;
-                   memory2a[7] <= 1'b1; memory2a[6:0] <= 7'd126;//-8'd126;
-                   memory3a <= 8'd25;
-                   memory4a <= 8'd106;end
-         6 : begin memory1a <= 8'd49;
-                   memory2a[7] <= 1'b1; memory2a[6:0] <= 7'd118;//-8'd118;
-                   memory3a <= 8'd118;
-                   memory4a[7] <= 1'b1; memory4a[6:0] <= 7'd49;end//-8'd49;end
-         7 : begin memory1a <= 8'd25;
-                   memory2a[7] <= 1'b1; memory2a[6:0] <= 7'd71;//-8'd71;
-                   memory3a <= 8'd106;
-                   memory4a[7] <= 1'b1; memory4a[6:0] <= 7'd126;end//-8'd126;end
-       endcase
-      end
+always @ (posedge RST or posedge CLK) begin
+  if (RST) begin
+    memory1a <= 8'd0; memory2a <= 8'd0; memory3a <= 8'd0; memory4a <= 8'd0;
+  end
+  else begin
+    case (indexi)
+      0 : begin
+      memory1a    <= 8'd91; memory2a      <= 8'd91;
+      memory3a    <= 8'd91; memory4a      <= 8'd91; end
+      1 : begin
+      memory1a    <= 8'd126;memory2a      <= 8'd106;
+      memory3a    <= 8'd71; memory4a      <= 8'd25; end
+      2 : begin
+      memory1a    <= 8'd118;memory2a      <= 8'd49;
+      memory3a[7] <= 1'b1;  memory3a[6:0] <= 7'd49; //-8'd49;
+      memory4a[7] <= 1'b1;  memory4a[6:0] <= 7'd118;end// end -8'd118;end
+      3 : begin
+      memory1a    <= 8'd106;
+      memory2a[7] <= 1'b1;  memory2a[6:0] <= 7'd25; //-8'd25;
+      memory3a[7] <= 1'b1;  memory3a[6:0] <= 7'd126;//-8'd126;
+      memory4a[7] <= 1'b1;  memory4a[6:0] <= 7'd71; end//-8'd71;      end
+      4 : begin
+      memory1a    <= 8'd91;
+      memory2a[7] <= 1'b1;  memory2a[6:0] <= 7'd91; //-8'd91;
+      memory3a[7] <= 1'b1;  memory3a[6:0] <= 7'd91; //-8'd91;
+      memory4a    <= 8'd91; end
+      5 : begin
+      memory1a    <= 8'd71;
+      memory2a[7] <= 1'b1;  memory2a[6:0] <= 7'd126;//-8'd126;
+      memory3a    <= 8'd25; memory4a      <= 8'd106;end
+      6 : begin
+      memory1a    <= 8'd49;
+      memory2a[7] <= 1'b1;  memory2a[6:0] <= 7'd118;//-8'd118;
+      memory3a    <= 8'd118;
+      memory4a[7] <= 1'b1;  memory4a[6:0] <= 7'd49; end//-8'd49;      end
+      7 : begin
+      memory1a    <= 8'd25;
+      memory2a[7] <= 1'b1;  memory2a[6:0] <= 7'd71; //-8'd71;
+      memory3a    <= 8'd106;
+      memory4a[7] <= 1'b1;  memory4a[6:0] <= 7'd126;end//-8'd126;     end
+    endcase
+  end
 end
 
 
 /* 8-bit input shifted 8 times thru a shift register*/
-always @ (posedge CLK or posedge RST)
-   begin
-   if (RST)
-       begin
-       xa0_in <= 8'b0; xa1_in <= 8'b0; xa2_in <= 8'b0; xa3_in <= 8'b0;
-       xa4_in <= 8'b0; xa5_in <= 8'b0; xa6_in <= 8'b0; xa7_in <= 8'b0;
-       end
-   else
-       begin
-       xa0_in <= xin; xa1_in <= xa0_in; xa2_in <= xa1_in; xa3_in <= xa2_in;
-       xa4_in <= xa3_in; xa5_in <= xa4_in; xa6_in <= xa5_in; xa7_in <= xa6_in;
-       end
-   end
+always @ (posedge CLK or posedge RST) begin
+  if (RST) begin
+    xa0_in <= 8'b0; xa1_in <= 8'b0; xa2_in <= 8'b0; xa3_in <= 8'b0;
+    xa4_in <= 8'b0; xa5_in <= 8'b0; xa6_in <= 8'b0; xa7_in <= 8'b0;
+  end
+  else begin
+    xa0_in <= xin; xa1_in <= xa0_in; xa2_in <= xa1_in; xa3_in <= xa2_in;
+    xa4_in <= xa3_in; xa5_in <= xa4_in; xa6_in <= xa5_in; xa7_in <= xa6_in;
+  end
+end
 
 /* shifted inputs registered every 8th clk (using cntr8)*/
 
-always @ (posedge CLK or posedge RST)
-   begin
-   if (RST)
-       begin
+always @ (posedge CLK or posedge RST) begin
+   if (RST) begin
        cntr8 <= 4'b0;
        end
-   else if (cntr8 < 4'b1000)
-       begin
+   else if (cntr8 < 4'b1000) begin
        cntr8 <= cntr8 + 1;
        end
-   else
-       begin
+   else begin
        cntr8 <= 4'b0001;
        end
    end
 
-always @ (posedge CLK or posedge RST)
-   begin
-   if (RST)
-       begin
+always @ (posedge CLK or posedge RST) begin
+   if (RST) begin
        xa0_reg <= 9'b0; xa1_reg <= 9'b0; xa2_reg <= 9'b0; xa3_reg <= 9'b0;
        xa4_reg <= 9'b0; xa5_reg <= 9'b0; xa6_reg <= 9'b0; xa7_reg <= 9'b0;
        end
-   else if (cntr8 == 4'b1000)
-       begin
+   else if (cntr8 == 4'b1000) begin
        xa0_reg <= {xa0_in[7],xa0_in}; xa1_reg <= {xa1_in[7],xa1_in};
        xa2_reg <= {xa2_in[7],xa2_in}; xa3_reg <= {xa3_in[7],xa3_in};
        xa4_reg <= {xa4_in[7],xa4_in}; xa5_reg <= {xa5_in[7],xa5_in};
        xa6_reg <= {xa6_in[7],xa6_in}; xa7_reg <= {xa7_in[7],xa7_in};
        end
-   else
-       begin
+   else begin
        end
    end
 
-always @ (posedge CLK or posedge RST)
-   begin
-   if (RST)
-       begin
+always @ (posedge CLK or posedge RST) begin
+   if (RST) begin
        toggleA <= 1'b0;
        end
-   else
-       begin
+   else begin
        toggleA <= ~toggleA;
        end
    end
@@ -265,14 +245,11 @@ always @ (posedge CLK or posedge RST)
 
 /* adder / subtractor block */
 
-always @ (posedge CLK or posedge RST)
-   begin
-   if (RST)
-       begin
+always @ (posedge CLK or posedge RST) begin
+   if (RST) begin
        add_sub1a <= 10'b0; add_sub2a <= 10'b0; add_sub3a <= 10'b0; add_sub4a <= 10'b0;
        end
-   else
-       begin
+   else begin
        if (toggleA == 1'b1)
 	         begin
            add_sub1a <= (xa7_reg + xa0_reg);
@@ -314,18 +291,14 @@ at the 11th clk*/
 
 /*wait state counter */
 
-always @ (posedge RST or posedge CLK)
-   begin
-   if (RST)
-       begin
+always @ (posedge RST or posedge CLK) begin
+   if (RST) begin
        i_wait <= 2'b01;
        end
-   else  if (i_wait != 2'b00)
-      begin
+   else  if (i_wait != 2'b00) begin
       i_wait  <= i_wait - 1;
       end
-   else
-      begin
+   else begin
       i_wait  <= 2'b00;
       end
    end
@@ -336,77 +309,65 @@ always @ (posedge RST or posedge CLK)
 // only after 10 clks using i_wait
 /* sign and magnitude separated here. magnitude of 9 bits is stored in *comp */
 
-always @ (posedge RST or posedge CLK)
-begin
-    if (RST)
-       begin
-         addsub1a_comp <= 9'b0; save_sign1a <= 1'b0;
+always @ (posedge RST or posedge CLK) begin
+    if (RST) begin
+         addsub1a_comp <= 8'b0; save_sign1a <= 1'b0;
        end
-    else
-       begin
+    else begin
        case (add_sub1a[9])
        1'b0: begin
-              addsub1a_comp <= add_sub1a; save_sign1a <= 1'b0;
+              addsub1a_comp <= add_sub1a[7:0]; save_sign1a <= 1'b0;
               end
        1'b1: begin
-              addsub1a_comp <= (-add_sub1a) ; save_sign1a <= 1'b1;
+              addsub1a_comp <= (-add_sub1a[7:0]) ; save_sign1a <= 1'b1;
               end
        endcase
        end
 end
 
-always @ (posedge RST or posedge CLK)
-begin
-    if (RST)
-       begin
-         addsub2a_comp <= 9'b0; save_sign2a <= 1'b0;
+always @ (posedge RST or posedge CLK) begin
+    if (RST) begin
+         addsub2a_comp <= 8'b0; save_sign2a <= 1'b0;
        end
-    else
-       begin
+    else begin
        case (add_sub2a[9])
        1'b0: begin
-              addsub2a_comp <= add_sub2a; save_sign2a <= 1'b0;
+              addsub2a_comp <= add_sub2a[7:0]; save_sign2a <= 1'b0;
               end
        1'b1: begin
-              addsub2a_comp <= (-add_sub2a) ; save_sign2a <= 1'b1;
+              addsub2a_comp <= (-add_sub2a[7:0]) ; save_sign2a <= 1'b1;
               end
        endcase
        end
 end
 
-always @ (posedge RST or posedge CLK)
-begin
-    if (RST)
-       begin
-         addsub3a_comp <= 9'b0; save_sign3a <= 1'b0;
+always @ (posedge RST or posedge CLK) begin
+    if (RST) begin
+         addsub3a_comp <= 8'b0; save_sign3a <= 1'b0;
        end
-    else
-       begin
+    else begin
        case (add_sub3a[9])
        1'b0: begin
-              addsub3a_comp <= add_sub3a; save_sign3a <= 1'b0;
+              addsub3a_comp <= add_sub3a[7:0]; save_sign3a <= 1'b0;
               end
        1'b1: begin
-              addsub3a_comp <= (-add_sub3a); save_sign3a <= 1'b1;
+              addsub3a_comp <= (-add_sub3a[7:0]); save_sign3a <= 1'b1;
               end
        endcase
        end
 end
 
-always @ (posedge RST or posedge CLK)
-begin
-    if (RST)
-       begin
-         addsub4a_comp <= 9'b0; save_sign4a <= 1'b0;
+always @ (posedge RST or posedge CLK) begin
+    if (RST) begin
+         addsub4a_comp <= 8'b0; save_sign4a <= 1'b0;
        end
-    else
-       begin
+    else begin
        case (add_sub4a[9])
        1'b0: begin
-              addsub4a_comp <= add_sub4a; save_sign4a <= 1'b0;
+              addsub4a_comp <= add_sub4a[7:0]; save_sign4a <= 1'b0;
               end
        1'b1: begin
-              addsub4a_comp <= (-add_sub4a); save_sign4a <= 1'b1;
+              addsub4a_comp <= (-add_sub4a[7:0]); save_sign4a <= 1'b1;
               end
        endcase
        end
@@ -423,20 +384,17 @@ end
 //MULT18X18 mult3a (.A({9'b0,addsub3a_comp}), .B({11'b0,memory3a[6:0]}), .P(p3a_all));
 //MULT18X18 mult4a (.A({9'b0,addsub4a_comp}), .B({11'b0,memory4a[6:0]}), .P(p4a_all));
 
-always @ (posedge RST or posedge CLK)
-  begin
-    if (RST)
-      begin
-        p1a <= 18'b0; p2a <= 18'b0; p3a <= 18'b0; p4a <= 18'b0; indexi<= 7;
+always @ (posedge RST or posedge CLK) begin
+    if (RST) begin
+        p1a <= 19'b0; p2a <= 19'b0; p3a <= 19'b0; p4a <= 19'b0; indexi<= 7;
       end /* p*a is extended to one more bit to take into acoount the sign */
-    else if (i_wait == 2'b00)
-      begin
+    else if (i_wait == 2'b00) begin
 
 
-        p1a <= (save_sign1a ^ memory1a[7]) ? (-p1a_all[15:0]) :(p1a_all[15:0]);
-        p2a <= (save_sign2a ^ memory2a[7]) ? (-p2a_all[15:0]) :(p2a_all[15:0]);
-        p3a <= (save_sign3a ^ memory3a[7]) ? (-p3a_all[15:0]) :(p3a_all[15:0]);
-        p4a <= (save_sign4a ^ memory4a[7]) ? (-p4a_all[15:0]) :(p4a_all[15:0]);
+        p1a <= (save_sign1a ^ memory1a[7]) ? (-{3'b0,p1a_all[15:0]}) :({3'b0,p1a_all[15:0]});
+        p2a <= (save_sign2a ^ memory2a[7]) ? (-{3'b0,p2a_all[15:0]}) :({3'b0,p2a_all[15:0]});
+        p3a <= (save_sign3a ^ memory3a[7]) ? (-{3'b0,p3a_all[15:0]}) :({3'b0,p3a_all[15:0]});
+        p4a <= (save_sign4a ^ memory4a[7]) ? (-{3'b0,p4a_all[15:0]}) :({3'b0,p4a_all[15:0]});
 
 
         if (indexi == 7)
@@ -447,14 +405,11 @@ always @ (posedge RST or posedge CLK)
   end
 
 
-/*always @ (posedge RST or posedge CLK)
-  begin
-    if (RST)
-      begin
+/*always @ (posedge RST or posedge CLK) begin
+    if (RST) begin
         p1a <= 19'b0; p2a <= 19'b0; p3a <= 19'b0; p4a <= 19'b0; indexi<= 7;
       end
-    else if (i_wait == 2'b00)
-      begin
+    else if (i_wait == 2'b00) begin
         p1a <= (save_sign1a ^ memory1a[7]) ? (-addsub1a_comp * memory1a[6:0]) :(addsub1a_comp * memory1a[6:0]);
         p2a <= (save_sign2a ^ memory2a[7]) ? (-addsub2a_comp * memory2a[6:0]) :(addsub2a_comp * memory2a[6:0]);
         p3a <= (save_sign3a ^ memory3a[7]) ? (-addsub3a_comp * memory3a[6:0]) :(addsub3a_comp * memory3a[6:0]);
@@ -468,14 +423,11 @@ always @ (posedge RST or posedge CLK)
 
 /* Final adder. Adding the ouputs of the 4 multipliers */
 
-always @ (posedge CLK or posedge RST)
-   begin
-   if (RST)
-       begin
+always @ (posedge CLK or posedge RST) begin
+   if (RST) begin
        z_out_int1 <= 19'b0; z_out_int2 <= 19'b0; z_out_int <= 19'b0;
        end
-   else
-       begin
+   else begin
        z_out_int1 <= (p1a + p2a);
        z_out_int2 <= (p3a + p4a);
        z_out_int <= (z_out_int1 + z_out_int2);
@@ -496,14 +448,11 @@ assign z_out = z_out_rnd;
 /* first valid adder output is at the 15th clk. (input reg + 8 bit SR + add_sub + comp. Signal + reg prod
 + 2 partial prod adds) So the RAM is enabled at the 15th clk)*/
 
-always @ (posedge CLK or posedge RST)
-   begin
-   if (RST)
-       begin
+always @ (posedge CLK or posedge RST) begin
+   if (RST) begin
        cntr12 <= 4'b0;
        end
-   else
-       begin
+   else begin
        cntr12 <= cntr12 + 1;
        end
    end
@@ -512,14 +461,11 @@ always @ (posedge CLK or posedge RST)
 
 assign en_ram1 = RST ? 1'b0 : (cntr12== 4'b1101) ? 1'b1 : en_ram1;
 
-always @ (posedge CLK or posedge RST)
-   begin
-   if (RST)
-       begin
+always @ (posedge CLK or posedge RST) begin
+   if (RST) begin
 	   en_ram1reg <= 1'b0;
        end
-   else
-       begin
+   else begin
        en_ram1reg <= en_ram1 ;
        end
    end
@@ -551,50 +497,39 @@ where "xw" is the xth write and "ram_locnx" is the xth ram location and "xr" is 
 is advanced by the read counter rd_cntr, nd writing by the write counter wr_cntr. */
 
 
-always @ (posedge CLK or posedge RST)
-   begin
-   if (RST)
-       begin
+always @ (posedge CLK or posedge RST) begin
+   if (RST) begin
 	   rd_cntr[5:3] <= 3'b111;
        end
-   else
-       begin
+   else begin
 	   if (en_ram1reg == 1'b1)
 	       rd_cntr[5:3] <= rd_cntr[5:3] + 1;
 	   end
    end
 
-always @ (posedge CLK or posedge RST)
-   begin
-   if (RST)
-       begin
+always @ (posedge CLK or posedge RST) begin
+   if (RST) begin
 	   rd_cntr[2:0] <= 3'b111;
        end
-   else
-       begin
+   else begin
 	   if (en_ram1reg == 1'b1 && rd_cntr[5:3] == 3'b111)
 	       rd_cntr[2:0] <= rd_cntr[2:0] + 1;
        end
    end
 
-always @ (posedge CLK or posedge RST)
-   begin
-   if (RST)
-       begin
+always @ (posedge CLK or posedge RST) begin
+   if (RST) begin
 	   rd_cntr[6] <= 1'b1;
        end
-   else
-       begin
+   else begin
        if (en_ram1reg == 1'b1 && rd_cntr[5:0] == 6'b111111)
           rd_cntr[6] <= ~rd_cntr[6];
        end
    end
 
 
-always @ (posedge CLK or posedge RST)
-   begin
-   if (RST)
-       begin
+always @ (posedge CLK or posedge RST) begin
+   if (RST) begin
        wr_cntr <= 7'b1111111;
        end
    else begin
@@ -606,35 +541,34 @@ always @ (posedge CLK or posedge RST)
    end
 
 
-initial
-begin
-ram2_mem[0] <= 16'b0; ram2_mem[1] <= 16'b0; ram2_mem[2] <= 16'b0; ram2_mem[3] <= 16'b0; ram2_mem[4] <= 16'b0;
-ram2_mem[5] <= 16'b0; ram2_mem[6] <= 16'b0; ram2_mem[7] <= 16'b0; ram2_mem[8] <= 16'b0; ram2_mem[9] <= 16'b0;
-ram2_mem[10] <= 16'b0; ram2_mem[11] <= 16'b0; ram2_mem[12] <= 16'b0; ram2_mem[13] <= 16'b0; ram2_mem[14] <= 16'b0;
-ram2_mem[15] <= 16'b0; ram2_mem[16] <= 16'b0; ram2_mem[17] <= 16'b0; ram2_mem[18] <= 16'b0; ram2_mem[19] <= 16'b0;
-ram2_mem[20] <= 16'b0; ram2_mem[21] <= 16'b0; ram2_mem[22] <= 16'b0; ram2_mem[23] <= 16'b0; ram2_mem[24] <= 16'b0;
-ram2_mem[25] <= 16'b0; ram2_mem[26] <= 16'b0; ram2_mem[27] <= 16'b0; ram2_mem[28] <= 16'b0; ram2_mem[29] <= 16'b0;
-ram2_mem[30] <= 16'b0; ram2_mem[31] <= 16'b0; ram2_mem[32] <= 16'b0; ram2_mem[33] <= 16'b0; ram2_mem[34] <= 16'b0;
-ram2_mem[35] <= 16'b0; ram2_mem[36] <= 16'b0; ram2_mem[37] <= 16'b0; ram2_mem[38] <= 16'b0; ram2_mem[39] <= 16'b0;
-ram2_mem[40] <= 16'b0; ram2_mem[41] <= 16'b0; ram2_mem[42] <= 16'b0; ram2_mem[43] <= 16'b0; ram2_mem[44] <= 16'b0;
-ram2_mem[45] <= 16'b0; ram2_mem[46] <= 16'b0; ram2_mem[47] <= 16'b0; ram2_mem[48] <= 16'b0; ram2_mem[49] <= 16'b0;
-ram2_mem[50] <= 16'b0; ram2_mem[51] <= 16'b0; ram2_mem[52] <= 16'b0; ram2_mem[53] <= 16'b0; ram2_mem[54] <= 16'b0;
-ram2_mem[55] <= 16'b0; ram2_mem[56] <= 16'b0; ram2_mem[57] <= 16'b0; ram2_mem[58] <= 16'b0; ram2_mem[59] <= 16'b0;
-ram2_mem[60] <= 16'b0; ram2_mem[61] <= 16'b0; ram2_mem[62] <= 16'b0; ram2_mem[63] <= 16'b0;
+initial begin
+ram2_mem[0] = 11'b0; ram2_mem[1] = 11'b0; ram2_mem[2] = 11'b0; ram2_mem[3] = 11'b0; ram2_mem[4] = 11'b0;
+ram2_mem[5] = 11'b0; ram2_mem[6] = 11'b0; ram2_mem[7] = 11'b0; ram2_mem[8] = 11'b0; ram2_mem[9] = 11'b0;
+ram2_mem[10] = 11'b0; ram2_mem[11] = 11'b0; ram2_mem[12] = 11'b0; ram2_mem[13] = 11'b0; ram2_mem[14] = 11'b0;
+ram2_mem[15] = 11'b0; ram2_mem[16] = 11'b0; ram2_mem[17] = 11'b0; ram2_mem[18] = 11'b0; ram2_mem[19] = 11'b0;
+ram2_mem[20] = 11'b0; ram2_mem[21] = 11'b0; ram2_mem[22] = 11'b0; ram2_mem[23] = 11'b0; ram2_mem[24] = 11'b0;
+ram2_mem[25] = 11'b0; ram2_mem[26] = 11'b0; ram2_mem[27] = 11'b0; ram2_mem[28] = 11'b0; ram2_mem[29] = 11'b0;
+ram2_mem[30] = 11'b0; ram2_mem[31] = 11'b0; ram2_mem[32] = 11'b0; ram2_mem[33] = 11'b0; ram2_mem[34] = 11'b0;
+ram2_mem[35] = 11'b0; ram2_mem[36] = 11'b0; ram2_mem[37] = 11'b0; ram2_mem[38] = 11'b0; ram2_mem[39] = 11'b0;
+ram2_mem[40] = 11'b0; ram2_mem[41] = 11'b0; ram2_mem[42] = 11'b0; ram2_mem[43] = 11'b0; ram2_mem[44] = 11'b0;
+ram2_mem[45] = 11'b0; ram2_mem[46] = 11'b0; ram2_mem[47] = 11'b0; ram2_mem[48] = 11'b0; ram2_mem[49] = 11'b0;
+ram2_mem[50] = 11'b0; ram2_mem[51] = 11'b0; ram2_mem[52] = 11'b0; ram2_mem[53] = 11'b0; ram2_mem[54] = 11'b0;
+ram2_mem[55] = 11'b0; ram2_mem[56] = 11'b0; ram2_mem[57] = 11'b0; ram2_mem[58] = 11'b0; ram2_mem[59] = 11'b0;
+ram2_mem[60] = 11'b0; ram2_mem[61] = 11'b0; ram2_mem[62] = 11'b0; ram2_mem[63] = 11'b0;
 
-ram1_mem[0] <= 16'b0; ram1_mem[1] <= 16'b0; ram1_mem[2] <= 16'b0; ram1_mem[3] <= 16'b0; ram1_mem[4] <= 16'b0;
-ram1_mem[5] <= 16'b0; ram1_mem[6] <= 16'b0; ram1_mem[7] <= 16'b0; ram1_mem[8] <= 16'b0; ram1_mem[9] <= 16'b0;
-ram1_mem[10] <= 16'b0; ram1_mem[11] <= 16'b0; ram1_mem[12] <= 16'b0; ram1_mem[13] <= 16'b0; ram1_mem[14] <= 16'b0;
-ram1_mem[15] <= 16'b0; ram1_mem[16] <= 16'b0; ram1_mem[17] <= 16'b0; ram1_mem[18] <= 16'b0; ram1_mem[19] <= 16'b0;
-ram1_mem[20] <= 16'b0; ram1_mem[21] <= 16'b0; ram1_mem[22] <= 16'b0; ram1_mem[23] <= 16'b0; ram1_mem[24] <= 16'b0;
-ram1_mem[25] <= 16'b0; ram1_mem[26] <= 16'b0; ram1_mem[27] <= 16'b0; ram1_mem[28] <= 16'b0; ram1_mem[29] <= 16'b0;
-ram1_mem[30] <= 16'b0; ram1_mem[31] <= 16'b0; ram1_mem[32] <= 16'b0; ram1_mem[33] <= 16'b0; ram1_mem[34] <= 16'b0;
-ram1_mem[35] <= 16'b0; ram1_mem[36] <= 16'b0; ram1_mem[37] <= 16'b0; ram1_mem[38] <= 16'b0; ram1_mem[39] <= 16'b0;
-ram1_mem[40] <= 16'b0; ram1_mem[41] <= 16'b0; ram1_mem[42] <= 16'b0; ram1_mem[43] <= 16'b0; ram1_mem[44] <= 16'b0;
-ram1_mem[45] <= 16'b0; ram1_mem[46] <= 16'b0; ram1_mem[47] <= 16'b0; ram1_mem[48] <= 16'b0; ram1_mem[49] <= 16'b0;
-ram1_mem[50] <= 16'b0; ram1_mem[51] <= 16'b0; ram1_mem[52] <= 16'b0; ram1_mem[53] <= 16'b0; ram1_mem[54] <= 16'b0;
-ram1_mem[55] <= 16'b0; ram1_mem[56] <= 16'b0; ram1_mem[57] <= 16'b0; ram1_mem[58] <= 16'b0; ram1_mem[59] <= 16'b0;
-ram1_mem[60] <= 16'b0; ram1_mem[61] <= 16'b0; ram1_mem[62] <= 16'b0; ram1_mem[63] <= 16'b0;
+ram1_mem[0] = 11'b0; ram1_mem[1] = 11'b0; ram1_mem[2] = 11'b0; ram1_mem[3] = 11'b0; ram1_mem[4] = 11'b0;
+ram1_mem[5] = 11'b0; ram1_mem[6] = 11'b0; ram1_mem[7] = 11'b0; ram1_mem[8] = 11'b0; ram1_mem[9] = 11'b0;
+ram1_mem[10] = 11'b0; ram1_mem[11] = 11'b0; ram1_mem[12] = 11'b0; ram1_mem[13] = 11'b0; ram1_mem[14] = 11'b0;
+ram1_mem[15] = 11'b0; ram1_mem[16] = 11'b0; ram1_mem[17] = 11'b0; ram1_mem[18] = 11'b0; ram1_mem[19] = 11'b0;
+ram1_mem[20] = 11'b0; ram1_mem[21] = 11'b0; ram1_mem[22] = 11'b0; ram1_mem[23] = 11'b0; ram1_mem[24] = 11'b0;
+ram1_mem[25] = 11'b0; ram1_mem[26] = 11'b0; ram1_mem[27] = 11'b0; ram1_mem[28] = 11'b0; ram1_mem[29] = 11'b0;
+ram1_mem[30] = 11'b0; ram1_mem[31] = 11'b0; ram1_mem[32] = 11'b0; ram1_mem[33] = 11'b0; ram1_mem[34] = 11'b0;
+ram1_mem[35] = 11'b0; ram1_mem[36] = 11'b0; ram1_mem[37] = 11'b0; ram1_mem[38] = 11'b0; ram1_mem[39] = 11'b0;
+ram1_mem[40] = 11'b0; ram1_mem[41] = 11'b0; ram1_mem[42] = 11'b0; ram1_mem[43] = 11'b0; ram1_mem[44] = 11'b0;
+ram1_mem[45] = 11'b0; ram1_mem[46] = 11'b0; ram1_mem[47] = 11'b0; ram1_mem[48] = 11'b0; ram1_mem[49] = 11'b0;
+ram1_mem[50] = 11'b0; ram1_mem[51] = 11'b0; ram1_mem[52] = 11'b0; ram1_mem[53] = 11'b0; ram1_mem[54] = 11'b0;
+ram1_mem[55] = 11'b0; ram1_mem[56] = 11'b0; ram1_mem[57] = 11'b0; ram1_mem[58] = 11'b0; ram1_mem[59] = 11'b0;
+ram1_mem[60] = 11'b0; ram1_mem[61] = 11'b0; ram1_mem[62] = 11'b0; ram1_mem[63] = 11'b0;
 
 end
 
@@ -648,8 +582,7 @@ if (en_ram1reg == 1'b1 && wr_cntr[6] == 1'b1)
 ram2_mem[wr_cntr[5:0]] <= z_out;
 
 
-always @ (posedge CLK)
-begin
+always @ (posedge CLK) begin
 if (en_ram1reg == 1'b1 && rd_cntr[6] == 1'b0)
   data_out <= ram2_mem[rd_cntr[5:0]];
 
@@ -665,44 +598,34 @@ end
 
 /* First dct coeeficient appears at the output of the RAM1 after
 15 + 64 clk cycles. So the 2nd DCT operation starts after 79 clk cycles. */
-always @ (posedge CLK or posedge RST)
-   begin
-   if (RST)
-       begin
+always @ (posedge CLK or posedge RST) begin
+   if (RST) begin
        cntr79 <= 7'b0;
        end
-   else
-       begin
+   else begin
        cntr79 <= cntr79 + 1;
       end
    end
 
 assign en_dct2d = RST ? 1'b0 : (cntr79 == 7'b1001111) ? 1'b1 : en_dct2d;
 
-always @ (posedge CLK or posedge RST)
-        begin
-          if (RST)
-              begin  en_dct2d_reg <= 1'b0; end
-          else
-              begin  en_dct2d_reg <= en_dct2d ; end
+always @ (posedge CLK or posedge RST) begin
+          if (RST) begin  en_dct2d_reg <= 1'b0; end
+          else begin  en_dct2d_reg <= en_dct2d ; end
         end
 
 assign data_out_final[10:0] = data_out;
 
-always @ (posedge CLK or posedge RST )
-   begin
-   if (RST)
-       begin
+always @ (posedge CLK or posedge RST ) begin
+   if (RST) begin
        xb0_in <= 11'b0; xb1_in <= 11'b0; xb2_in <= 11'b0; xb3_in <= 11'b0;
        xb4_in <= 11'b0; xb5_in <= 11'b0; xb6_in <= 11'b0; xb7_in <= 11'b0;
        end
-   else if (en_dct2d_reg == 1'b1)
-       begin
+   else if (en_dct2d_reg == 1'b1) begin
        xb0_in <= data_out_final; xb1_in <= xb0_in; xb2_in <= xb1_in; xb3_in <= xb2_in;
        xb4_in <= xb3_in; xb5_in <= xb4_in; xb6_in <= xb5_in; xb7_in <= xb6_in;
        end
-   else if (en_dct2d_reg == 1'b0)
-       begin
+   else if (en_dct2d_reg == 1'b0) begin
        xb0_in <= 11'b0; xb1_in <= 11'b0; xb2_in <= 11'b0; xb3_in <= 11'b0;
        xb4_in <= 11'b0; xb5_in <= 11'b0; xb6_in <= 11'b0; xb7_in <= 11'b0;
        end
@@ -710,15 +633,12 @@ always @ (posedge CLK or posedge RST )
 
 /* register inputs, inputs read in every eighth clk*/
 
-always @ (posedge CLK or posedge RST)
-   begin
-   if (RST)
-       begin
+always @ (posedge CLK or posedge RST) begin
+   if (RST) begin
        xb0_reg <= 12'b0; xb1_reg <= 12'b0; xb2_reg <= 12'b0; xb3_reg <= 12'b0;
        xb4_reg <= 12'b0; xb5_reg <= 12'b0; xb6_reg <= 12'b0; xb7_reg <= 12'b0;
        end
-   else if (cntr8 == 4'b1000)
-       begin
+   else if (cntr8 == 4'b1000) begin
        xb0_reg <= {xb0_in[10],xb0_in}; xb1_reg <= {xb1_in[10],xb1_in};
        xb2_reg <= {xb2_in[10],xb2_in}; xb3_reg <= {xb3_in[10],xb3_in};
        xb4_reg <= {xb4_in[10],xb4_in}; xb5_reg <= {xb5_in[10],xb5_in};
@@ -726,28 +646,22 @@ always @ (posedge CLK or posedge RST)
        end
    end
 
-always @ (posedge CLK or posedge RST)
-   begin
-   if (RST)
-       begin
+always @ (posedge CLK or posedge RST) begin
+   if (RST) begin
        toggleB <= 1'b0;
        end
-   else
-       begin
+   else begin
        toggleB <= ~toggleB;
        end
    end
 
 /* adder / subtractor block */
 
-always @ (posedge CLK or posedge RST)
-   begin
-   if (RST)
-       begin
+always @ (posedge CLK or posedge RST) begin
+   if (RST) begin
        add_sub1b <= 12'b0; add_sub2b <= 12'b0; add_sub3b <= 12'b0; add_sub4b <= 12'b0;
        end
-   else
-       begin
+   else begin
 	       if (toggleB == 1'b1)
 	          begin
             add_sub1b <= (xb0_reg + xb7_reg); add_sub2b <= (xb1_reg + xb6_reg);
@@ -761,77 +675,65 @@ always @ (posedge CLK or posedge RST)
        end
    end
 
-always @ (posedge RST or posedge CLK)
-begin
-    if (RST)
-       begin
+always @ (posedge RST or posedge CLK) begin
+    if (RST) begin
          addsub1b_comp <= 11'b0; save_sign1b <= 1'b0;
        end
-    else
-       begin
+    else begin
        case (add_sub1b[11])
        1'b0: begin
-              addsub1b_comp <= add_sub1b; save_sign1b <= 1'b0;
+              addsub1b_comp <= add_sub1b[10:0]; save_sign1b <= 1'b0;
               end
        1'b1: begin
-              addsub1b_comp <= (-add_sub1b) ; save_sign1b <= 1'b1;
+              addsub1b_comp <= (-add_sub1b[10:0]) ; save_sign1b <= 1'b1;
               end
        endcase
        end
 end
 
-always @ (posedge RST or posedge CLK)
-begin
-    if (RST)
-       begin
+always @ (posedge RST or posedge CLK) begin
+    if (RST) begin
          addsub2b_comp <= 11'b0; save_sign2b <= 1'b0;
        end
-    else
-       begin
+    else begin
        case (add_sub2b[11])
        1'b0: begin
-              addsub2b_comp <= add_sub2b; save_sign2b <= 1'b0;
+              addsub2b_comp <= add_sub2b[10:0]; save_sign2b <= 1'b0;
               end
        1'b1: begin
-              addsub2b_comp <= (-add_sub2b) ; save_sign2b <= 1'b1;
+              addsub2b_comp <= (-add_sub2b[10:0]) ; save_sign2b <= 1'b1;
               end
        endcase
        end
 end
 
-always @ (posedge RST or posedge CLK)
-begin
-    if (RST)
-       begin
+always @ (posedge RST or posedge CLK) begin
+    if (RST) begin
          addsub3b_comp <= 11'b0; save_sign3b <= 1'b0;
        end
-    else
-       begin
+    else begin
        case (add_sub3b[11])
        1'b0: begin
-              addsub3b_comp <= add_sub3b; save_sign3b <= 1'b0;
+              addsub3b_comp <= add_sub3b[10:0]; save_sign3b <= 1'b0;
               end
        1'b1: begin
-              addsub3b_comp <= (-add_sub3b) ; save_sign3b <= 1'b1;
+              addsub3b_comp <= (-add_sub3b[10:0]) ; save_sign3b <= 1'b1;
               end
        endcase
        end
 end
 
-always @ (posedge RST or posedge CLK)
-begin
-    if (RST)
-       begin
+always @ (posedge RST or posedge CLK) begin
+    if (RST) begin
          addsub4b_comp <= 11'b0; save_sign4b <= 1'b0;
        end
-    else
-       begin
+    else begin
        case (add_sub4b[11])
        1'b0: begin
-              addsub4b_comp <= add_sub4b; save_sign4b <= 1'b0;
+              addsub4b_comp <= add_sub4b[10:0]; save_sign4b <= 1'b0;
               end
        1'b1: begin
-              addsub4b_comp <= (-add_sub4b) ; save_sign4b <= 1'b1;
+              addsub4b_comp <= (-add_sub4b[10:0]) ; save_sign4b <= 1'b1;
               end
        endcase
        end
@@ -848,30 +750,24 @@ end
 //MULT18X18 mult3b (.A({9'b0,addsub3b_comp}), .B({11'b0,memory3a[6:0]}), .P(p3b_all));
 //MULT18X18 mult4b (.A({9'b0,addsub4b_comp}), .B({11'b0,memory4a[6:0]}), .P(p4b_all));
 
-always @ (posedge RST or posedge CLK)
-  begin
-    if (RST)
-      begin
+always @ (posedge RST or posedge CLK) begin
+    if (RST) begin
         p1b <= 20'b0; p2b <= 20'b0; p3b <= 20'b0; p4b <= 20'b0;
       end
-    else if (i_wait == 2'b00)
-      begin
+    else if (i_wait == 2'b00) begin
 
 
-        p1b <= (save_sign1b ^ memory1a[7]) ? (-p1b_all[17:0]) :(p1b_all[17:0]);
-        p2b <= (save_sign2b ^ memory2a[7]) ? (-p2b_all[17:0]) :(p2b_all[17:0]);
-        p3b <= (save_sign3b ^ memory3a[7]) ? (-p3b_all[17:0]) :(p3b_all[17:0]);
-        p4b <= (save_sign4b ^ memory4a[7]) ? (-p4b_all[17:0]) :(p4b_all[17:0]);
+        p1b <= (save_sign1b ^ memory1a[7]) ? (-{2'b0,p1b_all[17:0]}) :({2'b0,p1b_all[17:0]});
+        p2b <= (save_sign2b ^ memory2a[7]) ? (-{2'b0,p2b_all[17:0]}) :({2'b0,p2b_all[17:0]});
+        p3b <= (save_sign3b ^ memory3a[7]) ? (-{2'b0,p3b_all[17:0]}) :({2'b0,p3b_all[17:0]});
+        p4b <= (save_sign4b ^ memory4a[7]) ? (-{2'b0,p4b_all[17:0]}) :({2'b0,p4b_all[17:0]});
         end
   end
-/*always @ (posedge RST or posedge CLK)
-  begin
-    if (RST)
-      begin
+/*always @ (posedge RST or posedge CLK) begin
+    if (RST) begin
         p1b <= 16'b0; p2b <= 16'b0; p3b <= 16'b0; p4b <= 16'b0; //indexj<= 7;
       end
-    else if (i_wait == 2'b00)
-      begin
+    else if (i_wait == 2'b00) begin
         p1b <= (save_sign1b ^ memory1a[7]) ? (-addsub1b_comp * memory1a[6:0]) :(addsub1b_comp * memory1a[6:0]);
         p2b <= (save_sign2b ^ memory2a[7]) ? (-addsub2b_comp * memory2a[6:0]) :(addsub2b_comp * memory2a[6:0]);
         p3b <= (save_sign3b ^ memory3a[7]) ? (-addsub3b_comp * memory3a[6:0]) :(addsub3b_comp * memory3a[6:0]);
@@ -891,14 +787,11 @@ always @ (posedge RST or posedge CLK)
 
 /* Final adder. Adding the ouputs of the 4 multipliers */
 
-always @ (posedge CLK or posedge RST)
-   begin
-   if (RST)
-       begin
+always @ (posedge CLK or posedge RST) begin
+   if (RST) begin
        dct2d_int1 <= 20'b0; dct2d_int2 <= 20'b0; dct_2d_int <= 20'b0;
        end
-   else
-       begin
+   else begin
        dct2d_int1 <= (p1b + p2b);
        dct2d_int2 <= (p3b + p4b);
        dct_2d_int <= (dct2d_int1 + dct2d_int2);
@@ -916,23 +809,19 @@ multiplying +  2clks to add product. So the 2D-DCT output will be valid
 at the 94th clk. rdy_out goes high at 93rd clk so that the first data is valid
 for the next block*/
 
-always @ (posedge CLK or posedge RST)
-   begin
-   if (RST)
-       begin
-       cntr92 <= 8'b0;
+always @ (posedge CLK or posedge RST) begin
+   if (RST) begin
+       cntr92 <= 7'b0;
        end
-   else if (cntr92 < 8'b1011110)
-       begin
+   else if (cntr92 < 7'b1011110) begin
        cntr92 <= cntr92 + 1;
        end
-   else
-       begin
+   else begin
        cntr92 <= cntr92;
        end
    end
 
-assign rdy_out = (cntr92 == 8'b1011110) ? 1'b1 : 1'b0;
+assign rdy_out = (cntr92 == 7'b1011110) ? 1'b1 : 1'b0;
 
 initial begin
    $dumpfile("verilog.vcd");

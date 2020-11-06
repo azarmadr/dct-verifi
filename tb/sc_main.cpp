@@ -23,6 +23,8 @@ int sc_main(int argc, char* argv[]) {
 
    sc_signal<sc_bv< 8> > xin;
    sc_signal<sc_bv<12> > dct_2d;
+   sc_signal<sc_bv<11> > z_out;
+   sc_signal<sc_bv<19> > z;
 
    sc_fifo<pkt*> mon_f(3),drv_f(3);
 
@@ -35,6 +37,8 @@ int sc_main(int argc, char* argv[]) {
    top-> xin(xin);
    top-> dct_2d(dct_2d);
    top-> rdy_out(rdy_out);
+   top-> z_out(z_out);
+   top-> z_out_int(z);
 
    //_drv
    drv* drv_t = new drv("drv_t");
@@ -50,6 +54,8 @@ int sc_main(int argc, char* argv[]) {
    mon_t -> xin(xin);
    mon_t -> dct(dct_2d);
    mon_t -> rdy_o(rdy_out);
+   mon_t -> z_out(z_out);
+   mon_t -> z(z);
 
    //_sb
    sb* sb_t = new sb("sb_t");
@@ -65,7 +71,7 @@ int sc_main(int argc, char* argv[]) {
    Verilated::traceEverOn(true);
 
    rst= 1;
-   count = 3;
+   count = 1;
    sb_t->count = count;
    sc_start(20,SC_NS);
 
@@ -84,10 +90,10 @@ int sc_main(int argc, char* argv[]) {
       rst= 1;
       sc_start(2733,SC_NS);*/
    }
-   
+
    top->final();
    tfp->close();
-   
+
    delete top;
    top = NULL;
 

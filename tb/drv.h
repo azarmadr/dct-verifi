@@ -16,7 +16,7 @@ SC_MODULE(drv){
 };
 void drv::driver(){
    wait();
-   while(1){
+   //while(1){
       pkt* p = new (pkt);
       dct_calc(p);
       for(int i=0;i<64;i++){
@@ -24,5 +24,5 @@ void drv::driver(){
 	 wait();
       }
       drv_f->write(p);
-   }
+   //}
 }

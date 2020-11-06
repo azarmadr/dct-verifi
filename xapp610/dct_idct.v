@@ -14,7 +14,7 @@ wire[7:0] dct_2d;
 wire rdy_sig;
 
 dct dct_1 (.CLK(CLK), .RST(RST), .xin(xin), .dct_2d(dct_2d), .rdy_out(rdy_sig));
-//idct idct_2 (.CLK(CLK), .RST(RST), .dct_2d(dct_2d), .rdy_in(rdy_sig), .idct_2d(idct_2d));
+idct idct_2 (.CLK(CLK), .RST(RST), .dct_2d(dct_2d), .rdy_in(rdy_sig), .idct_2d(idct_2d));
 
 
 endmodule
