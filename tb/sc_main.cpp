@@ -28,7 +28,6 @@ int sc_main(int argc, char* argv[]) {
 
    sc_fifo<pkt*> mon_f(3),drv_f(3);
 
-   int count;
 
    //_DUT
    Vdct* top = new Vdct("top");
@@ -37,8 +36,6 @@ int sc_main(int argc, char* argv[]) {
    top-> xin(xin);
    top-> dct_2d(dct_2d);
    top-> rdy_out(rdy_out);
-   top-> z_out(z_out);
-   top-> z_out_int(z);
 
    //_drv
    drv* drv_t = new drv("drv_t");
@@ -54,8 +51,6 @@ int sc_main(int argc, char* argv[]) {
    mon_t -> xin(xin);
    mon_t -> dct(dct_2d);
    mon_t -> rdy_o(rdy_out);
-   mon_t -> z_out(z_out);
-   mon_t -> z(z);
 
    //_sb
    sb* sb_t = new sb("sb_t");
@@ -71,8 +66,7 @@ int sc_main(int argc, char* argv[]) {
    Verilated::traceEverOn(true);
 
    rst= 1;
-   count = 1;
-   sb_t->count = count;
+   sb_t->count = 6;
    sc_start(20,SC_NS);
 
    cout << "Enabling waves...\n";
@@ -84,11 +78,7 @@ int sc_main(int argc, char* argv[]) {
       tfp->flush();
 
       rst= 0;
-      sc_start(1,SC_NS);/*
-      rst= 0;
-      sc_start(2733,SC_NS);
-      rst= 1;
-      sc_start(2733,SC_NS);*/
+      sc_start(1,SC_NS);
    }
 
    top->final();

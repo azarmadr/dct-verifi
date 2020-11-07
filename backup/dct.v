@@ -83,7 +83,7 @@ Storage / RAM section
 
 `timescale 1ns/1ps
 
-module dct ( CLK, RST, xin,dct_2d,rdy_out,z_out,z_out_int);
+module dct ( CLK, RST, xin,dct_2d,rdy_out);
 output [11:0] dct_2d /* verilator sc_bv*/ ;
 output [10:0] z_out /*verilator sc_bv*/;
 output [18:0] z_out_int /*verilator sc_bv*/;

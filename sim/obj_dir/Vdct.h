@@ -10,7 +10,7 @@
 
 #include "systemc.h"
 #include "verilated_sc.h"
-#include "verilated_heavy.h"
+#include "verilated.h"
 
 //==========
 
@@ -30,8 +30,6 @@ SC_MODULE(Vdct) {
     sc_in<bool> RST;
     sc_out<bool> rdy_out;
     sc_out<sc_bv<12> > dct_2d;
-    sc_out<sc_bv<11> > z_out;
-    sc_out<sc_bv<19> > z_out_int;
     sc_in<sc_bv<8> > xin;
     
     // LOCAL SIGNALS
@@ -50,6 +48,10 @@ SC_MODULE(Vdct) {
         CData/*7:0*/ dct__DOT__xa5_in;
         CData/*7:0*/ dct__DOT__xa6_in;
         CData/*7:0*/ dct__DOT__xa7_in;
+        CData/*7:0*/ dct__DOT__addsub1a_comp;
+        CData/*7:0*/ dct__DOT__addsub2a_comp;
+        CData/*7:0*/ dct__DOT__addsub3a_comp;
+        CData/*7:0*/ dct__DOT__addsub4a_comp;
         CData/*0:0*/ dct__DOT__save_sign1a;
         CData/*0:0*/ dct__DOT__save_sign2a;
         CData/*0:0*/ dct__DOT__save_sign3a;
@@ -79,14 +81,10 @@ SC_MODULE(Vdct) {
         SData/*8:0*/ dct__DOT__xa5_reg;
         SData/*8:0*/ dct__DOT__xa6_reg;
         SData/*8:0*/ dct__DOT__xa7_reg;
-        SData/*9:0*/ dct__DOT__add_sub1a;
-        SData/*9:0*/ dct__DOT__add_sub2a;
-        SData/*9:0*/ dct__DOT__add_sub3a;
-        SData/*9:0*/ dct__DOT__add_sub4a;
-        SData/*8:0*/ dct__DOT__addsub1a_comp;
-        SData/*8:0*/ dct__DOT__addsub2a_comp;
-        SData/*8:0*/ dct__DOT__addsub3a_comp;
-        SData/*8:0*/ dct__DOT__addsub4a_comp;
+        SData/*8:0*/ dct__DOT__add_sub1a;
+        SData/*8:0*/ dct__DOT__add_sub2a;
+        SData/*8:0*/ dct__DOT__add_sub3a;
+        SData/*8:0*/ dct__DOT__add_sub4a;
         SData/*10:0*/ dct__DOT__z_out_rnd;
         SData/*10:0*/ dct__DOT__data_out;
         SData/*10:0*/ dct__DOT__xb0_in;
@@ -121,6 +119,7 @@ SC_MODULE(Vdct) {
         IData/*18:0*/ dct__DOT__p4a;
         IData/*18:0*/ dct__DOT__z_out_int1;
         IData/*18:0*/ dct__DOT__z_out_int2;
+        IData/*18:0*/ dct__DOT__z_out_int;
         IData/*31:0*/ dct__DOT__indexi;
         IData/*19:0*/ dct__DOT__p1b;
         IData/*19:0*/ dct__DOT__p2b;
@@ -129,6 +128,7 @@ SC_MODULE(Vdct) {
         IData/*19:0*/ dct__DOT__dct2d_int1;
         IData/*19:0*/ dct__DOT__dct2d_int2;
         IData/*19:0*/ dct__DOT__dct_2d_int;
+        IData/*31:0*/ dct__DOT__unnamedblk1__DOT__itemp;
         QData/*35:0*/ dct__DOT__p1a_all;
         QData/*35:0*/ dct__DOT__p2a_all;
         QData/*35:0*/ dct__DOT__p3a_all;
@@ -152,7 +152,6 @@ SC_MODULE(Vdct) {
     CData/*0:0*/ __Vclklast__TOP____Vcellinp__dct__CLK;
     CData/*0:0*/ __Vclklast__TOP____VinpClk__TOP____Vcellinp__dct__RST;
     CData/*0:0*/ __Vchglast__TOP____Vcellinp__dct__RST;
-    IData/*18:0*/ __Vcellout__dct__z_out_int;
     CData/*0:0*/ __Vm_traceActivity[4];
     
     // INTERNAL VARIABLES
@@ -180,13 +179,13 @@ SC_MODULE(Vdct) {
     // INTERNAL METHODS
   private:
     static void _eval_initial_loop(Vdct__Syms* __restrict vlSymsp);
-    void _traceDumpOpen();void _traceDumpClose();public:
+  public:
     void __Vconfigure(Vdct__Syms* symsp, bool first);
   private:
     static QData _change_request(Vdct__Syms* __restrict vlSymsp);
     static QData _change_request_1(Vdct__Syms* __restrict vlSymsp);
   public:
-    static void _combo__TOP__2(Vdct__Syms* __restrict vlSymsp);
+    static void _combo__TOP__1(Vdct__Syms* __restrict vlSymsp);
     static void _combo__TOP__6(Vdct__Syms* __restrict vlSymsp);
     static void _combo__TOP__8(Vdct__Syms* __restrict vlSymsp);
   private:
@@ -200,11 +199,11 @@ SC_MODULE(Vdct) {
   public:
     static void _eval_initial(Vdct__Syms* __restrict vlSymsp) VL_ATTR_COLD;
     static void _eval_settle(Vdct__Syms* __restrict vlSymsp) VL_ATTR_COLD;
-    static void _initial__TOP__1(Vdct__Syms* __restrict vlSymsp) VL_ATTR_COLD;
+    static void _initial__TOP__3(Vdct__Syms* __restrict vlSymsp) VL_ATTR_COLD;
     static void _sequent__TOP__4(Vdct__Syms* __restrict vlSymsp);
     static void _sequent__TOP__5(Vdct__Syms* __restrict vlSymsp);
     static void _sequent__TOP__7(Vdct__Syms* __restrict vlSymsp);
-    static void _settle__TOP__3(Vdct__Syms* __restrict vlSymsp) VL_ATTR_COLD;
+    static void _settle__TOP__2(Vdct__Syms* __restrict vlSymsp) VL_ATTR_COLD;
   private:
     static void traceChgSub0(void* userp, VerilatedVcd* tracep);
     static void traceChgTop0(void* userp, VerilatedVcd* tracep);

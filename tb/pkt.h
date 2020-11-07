@@ -86,7 +86,7 @@ void dct_calc(pkt* p){
       z[i] = 0;
       p->dct[i] = 0;
       p->xin[i] = xin[i];
-      //p->xin[i] =(rand() % 127);
+      p->xin[i] =(rand() % 255 -128);
    }
    //_1D_DCT
    for(int i=0;i<64;i++){
@@ -100,7 +100,7 @@ void dct_calc(pkt* p){
       p->dct[i] = temp[i].range(19,8);
       if(temp[i][7]) p->dct[i]++;
    }
-   cout<<"pkt-z"<<z;
+   //cout<<"pkt-z"<<z;
    //cout<<"pkt-z_out"<<z_out;
    //cout<<temp;
 }

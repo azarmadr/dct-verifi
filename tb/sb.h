@@ -19,23 +19,13 @@ class sb : public sc_module{
       pkt* mon_p = new(pkt);
       pkt* drv_p = new(pkt);
 
-      while (count>0){
-        wait(1, SC_NS);
-        SC_FORK
-          sc_spawn(&mon_p,
-              sc_bind(&sb::get_pkt, this, sc_ref(mon_f))),
-          sc_spawn(&drv_p,
-              sc_bind(&sb::get_pkt, this, sc_ref(drv_f))),
-        SC_JOIN
+      while (count--){
+        wait(mon_f->data_written_event() & drv_f->data_written_event());
+        mon_p = mon_f->read();
+        drv_p = drv_f->read();
         if(*mon_p == *drv_p) cout << "packets matched" <<endl;
-        cout <<"\nobserved values"<< *mon_p << *drv_p;
-        wait(1, SC_NS);
-        count--;
+        else cout<<"\nobserved values"<< *mon_p << *drv_p;
       }
       done = true;
-    }
-
-    pkt* get_pkt(sc_port<sc_fifo_in_if<pkt*> >& f){
-      return(f -> read());
     }
 };
