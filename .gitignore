@@ -30,8 +30,15 @@
 *.exe
 *.out
 *.app
+
+# Working
 _o_pdf/*
+.o.pdf/*
+
+# Temp
 /sim/systemc/obj_dir/*
+/sim/obj_dir/*
+compile0.sh
 o.txt
 *.llhd
 *.vcd
