@@ -38,7 +38,11 @@ _o_pdf/*
 # Temp
 /sim/systemc/obj_dir/*
 /sim/obj_dir/*
+/sim/obj_dir0/*
+.clangd
 compile0.sh
+dct-py/**
+backup
 o.txt
 *.llhd
 *.vcd
