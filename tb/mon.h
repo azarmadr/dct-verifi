@@ -4,12 +4,11 @@ SC_MODULE(mon){
    sc_in<bool> rst;
    sc_in<sc_bv< 8> > xin;
    sc_in<sc_bv<12> > dct;
-   sc_in<sc_bv<11> > z_out;
-   sc_in<sc_bv<19> > z;
    sc_in<bool> rdy_o;
 
    sc_event mrdy,drdy;
    sc_event_or_list mts;
+   std::vector<pkt*> pkt_q;
    std::vector<sc_process_handle> m_thread;
 
    sc_port<sc_fifo_out_if<pkt*> > mon_f;
@@ -19,69 +18,35 @@ SC_MODULE(mon){
    sc_int<8> x_[64];
 
    void monitor();
-   void zx();
-   void zi();
-   void dct_m(pkt* p);
+   void dct_m();
 
    SC_CTOR(mon){
-      SC_CTHREAD(zi,clk.pos());
+      SC_THREAD(dct_m);
       reset_signal_is(rst, true);
-      SC_CTHREAD(monitor,clk.pos());
+      SC_THREAD(monitor);
       reset_signal_is(rst, true);
    }
 };
 void mon::monitor(){
-  wait();
-  //while(true){
-    pkt* p =new(pkt);
-    for(int i=0;i<64;i++){
-      wait();
+  pkt* p = NULL;
+  wait(clk.posedge_event());
+  for(;;){
+    p = new pkt;
+    for(int i = 0;i<64;i++){
+      wait(clk.posedge_event());
       p->xin[i] = xin->read();
     }
-    //cout<<"x from p"<<p->xin;
-    m_thread.push_back(
-        sc_spawn(
-          sc_bind(&mon::dct_m,this, sc_ref(p))
-          ));
-  //}
-}
-void mon::zx(){
-  wait();
-  //while(1){
-    int j=0;
-    while(j>0){
-      wait();
-      j--;
-    }
-    for(int i=0;i<64;i++){
-      wait();
-      x_[i] = xin->read();
-    }
-    //cout<<"x"<<x_;
-  //}
-}
-void mon::zi(){
-  wait();
-  //while(1){
-    int j=15;
-    while(j>0){
-      wait();
-      j--;
-    }
-    for(int i=0;i<64;i++){
-      z_[i] = z->read();
-      z_out_[i] = z_out->read();
-      wait();
-    }
-    cout<<"z"<<z_;
-    //cout<<"z_out"<<z_out_;
-  //}
-}
-void mon::dct_m(pkt* p){
-  wait(310,SC_NS);
-  for(int i=0;i<64;i++){
-    p->dct[(i%8)*8+i/8]= dct->read();
-    wait(10,SC_NS);
+    pkt_q.push_back(p);
   }
-  mon_f->write(p);
+}
+void mon::dct_m(){
+  wait(rdy_o.posedge_event());
+  for(;;){
+    for(int i=0;i<64;i++){
+      wait(clk.posedge_event());
+      pkt_q.front()->dct[(i%8)*8+i/8]= dct->read();
+    }
+    mon_f->write(pkt_q.front());
+    pkt_q.erase(pkt_q.begin());
+  }
 }
