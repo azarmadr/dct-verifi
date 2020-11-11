@@ -18,15 +18,12 @@ int sc_main(int argc, char* argv[]) {
    Verilated::debug(0);
 
    sc_clock clk("clock", 10, SC_NS);
-   sc_signal<bool> rst;
-   sc_signal<bool> rdy_out;
+   sc_signal<bool>        rst;
+   sc_signal<bool>        rdy_out;
+   sc_signal<sc_bv< 8> >  xin;
+   sc_signal<sc_bv<12> >  dct_2d;
 
-   sc_signal<sc_bv< 8> > xin;
-   sc_signal<sc_bv<12> > dct_2d;
-   sc_signal<sc_bv<11> > z_out;
-   sc_signal<sc_bv<19> > z;
-
-   sc_fifo<pkt*> mon_f(3),drv_f(3);
+   sc_fifo<pkt*> drv_f(1),pkt_f(1);
 
 
    //_DUT
@@ -52,21 +49,23 @@ int sc_main(int argc, char* argv[]) {
    mon_t -> dct(dct_2d);
    mon_t -> rdy_o(rdy_out);
 
+   //_gen
+   gen* gen_t = new gen("gen_t");
+
    //_sb
-   sb* sb_t = new sb("sb_t");
+   //sb* sb_t = new sb("sb_t");
 
    //_connections
+   gen_t->pkt_f(pkt_f);
+   gen_t->drv_f(drv_f);
    drv_t->drv_f(drv_f);
-   mon_t->mon_f(mon_f);
-   sb_t->mon_f(mon_f);
-   sb_t->drv_f(drv_f);
+   mon_t->pkt_f(pkt_f);
 
    srand(time(0));
    //_WAVES
    Verilated::traceEverOn(true);
 
    rst= 1;
-   sb_t->count = 6;
    sc_start(20,SC_NS);
 
    cout << "Enabling waves...\n";
@@ -74,7 +73,7 @@ int sc_main(int argc, char* argv[]) {
    top->trace (tfp, 99);
    tfp->open ("./vl.vcd");
 
-   while(!sb_t->done){
+   while(!gen_t->done){
       tfp->flush();
 
       rst= 0;

@@ -34,38 +34,41 @@
 **              IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR 
 **              A PARTICULAR PURPOSE, OR AGAINST INFRINGEMENT. 
  
-** Module: idct8x8  
-** A 1D-IDCT is implemented on the input dct values. The output of this called 
-** the intermediate value is stored in a RAM. The 2nd 1D-IDCT operation is done ** on this stored value to give the final 2D-IDCT output idct_2d. The inputs are ** 9 bits wide and the 2d-idct outputs are 8 bits wide. 
-** 1st 1D section 
-** The input signals are taken one pixel at a time in the order x00 to x07, 
-** x10 to x07 and so on up to x77. These inputs are fed into a 8 bit shift  
-** register. The outputs of the 8 bit shift registers are registered at every  
-** 8th clock .This will enable us to register in 8 pixels (one row) at atime.  
-** The pixels are fed into a multiplier whose other input is connected to stored  
-** values in registers which act as memory. The outputs of the 8 multipliers are  
-** added at every CLK in the final adder. The ouput of the adder z_out is the  
-** 1D-IDCT values given out in the order in which the inputs were read in. 
-** It takes 8 clks to read in the first set of inputs, 1 clk to get the absolute  
-** value of the input, 1 clk for multiplication, 2 clk for the final adder.  
-** total = 12 clks to get the 1st z_out value. Every subsequent clk gives out 
-**  the next z_out value. So to get all the 64 values we need 12+64=76 clks. 
-** Storage / RAM section 
-** The outputs z_out of the adder are stored in RAMs. Two RAMs are used so that  
-** data write can be continuous. The 1st valid input for the RAM1 is available  
-** at the 12th clk. So the RAM1 enable is active after 11 clks. After this the  
-** write operation continues for 64 clks . At the 65th clock, since z_out is  
-** continuous, we get the next valid z_out_00. This 2nd set of valid 1D-DCT  
-** coefficients are written into RAM2 which is enabled at 12+64 clks. 
-** So at 65th clk, RAM1 goes into read mode for the next 64 clks and RAM2 is in  
-** write mode. After this for every 64 clks, the read and write switches between  
-** the 2 RAMS. 
-** 2nd 1D-IDCT section 
-** After the 1st 76th clk when RAM1 is full, the 2nd 1d calculations can start. 
-** The second 1D implementation is the same as the 1st 1D implementation with  
-** the inputs now coming from either RAM1 or RAM2. Also, the inputs are read in  
-** one column at a time in the order z00 to z70, z10 to z70 up to z77. The  
-** outputs from the adder in the 2nd section are the 2D-IDCT coefficients. 
+# Module: idct8x8  
+1. A 1D-IDCT is implemented on the input dct values
+2. The output of this called the intermediate value is stored in a RAM
+3. The 2nd 1D-IDCT operation is done on this stored value to give the final 2D-IDCT output idct_2d
+4. The inputs are 9 bits wide and the 2d-idct outputs are 8 bits wide
+
+## 1st 1D section 
+The input signals are taken one pixel at a time in the order x00 to x07, x10 to x07 and so on up to x77
+These inputs are fed into a 8 bit shift  register
+The outputs of the 8 bit shift registers are registered at every  8th clock .This will enable us to register in 8 pixels (one row) at atime
+ The pixels are fed into a multiplier whose other input is connected to stored  values in registers which act as memory
+The outputs of the 8 multipliers are  added at every CLK in the final adder
+The ouput of the adder z_out is the  1D-IDCT values given out in the order in which the inputs were read in
+ It takes 8 clks to read in the first set of inputs, 1 clk to get the absolute  value of the input, 1 clk for multiplication, 2 clk for the final adder
+ total = 12 clks to get the 1st z_out value
+Every subsequent clk gives out the next z_out value
+So to get all the 64 values we need 12+64=76 clks
+
+## Storage / RAM section 
+The outputs z_out of the adder are stored in RAMs
+Two RAMs are used so that  data write can be continuous
+The 1st valid input for the RAM1 is available  at the 12th clk
+So the RAM1 enable is active after 11 clks
+After this the  write operation continues for 64 clks 
+At the 65th clock, since z_out is  continuous, we get the next valid z_out_00
+This 2nd set of valid 1D-DCT  coefficients are written into RAM2 which is enabled at 12+64 clks
+ So at 65th clk, RAM1 goes into read mode for the next 64 clks and RAM2 is in  write mode
+After this for every 64 clks, the read and write switches between  the 2 RAMS
+
+## 2nd 1D-IDCT section 
+After the 1st 76th clk when RAM1 is full, the 2nd 1d calculations can start
+ The second 1D implementation is the same as the 1st 1D implementation with  the inputs now coming from either RAM1 or RAM2
+Also, the inputs are read in  one column at a time in the order z00 to z70, z10 to z70 up to z77
+The  outputs from the adder in the 2nd section are the 2D-IDCT coefficients
+
 ***********************************************************************/ 
 `timescale 1ns/1ps 
  

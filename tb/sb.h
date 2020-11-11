@@ -3,7 +3,7 @@ class sb : public sc_module{
   public:
 
     bool done;
-    int count;
+    int error_p,matched_p,total_p,pkt_c;
 
     sc_port<sc_fifo_in_if<pkt*> > mon_f,drv_f;
 
@@ -19,13 +19,19 @@ class sb : public sc_module{
       pkt* mon_p = new(pkt);
       pkt* drv_p = new(pkt);
 
-      while (count--){
+      wait(20,SC_NS);
+      while(pkt_c--){
         wait(mon_f->data_written_event() & drv_f->data_written_event());
         mon_p = mon_f->read();
         drv_p = drv_f->read();
-        if(*mon_p == *drv_p) cout << "packets matched" <<endl;
-        else cout<<"\nobserved values"<< *mon_p << *drv_p;
+        ++total_p;
+        if(*mon_p == *drv_p) cout<<total_p<<"--"<<++matched_p<<"\t";
+          //cout << "packets matched" <<endl;
+        else cout<<total_p<<"--"<<++error_p<<"\t";
+        //if(error_p<3)
+          cout<<"\nmon: "<< *mon_p<<"gen: "<< *drv_p;
       }
+      //cout<<"sb: "<<matched_p<<" with errors "<<error_p<<endl;
       done = true;
     }
 };
