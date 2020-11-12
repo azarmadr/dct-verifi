@@ -18,7 +18,6 @@ void drv::driver(){
   wait(clk.posedge_event());
   for(;;){
     pkt* p = new (pkt);
-    //if(drv_f->nb_read(p)) delete(drv_f->read());
     p = drv_f->read();
     //cout<<sc_time_stamp()<<*p;
     for(int i=0;i<64;i++){

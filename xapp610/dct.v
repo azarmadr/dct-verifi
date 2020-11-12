@@ -104,7 +104,7 @@ reg[7:0] xa0_in,         xa1_in,         xa2_in,         xa3_in;
 reg[7:0] xa4_in,         xa5_in,         xa6_in,         xa7_in;
 reg[8:0] xa0_reg,        xa1_reg,        xa2_reg,        xa3_reg;
 reg[8:0] xa4_reg,        xa5_reg,        xa6_reg,        xa7_reg;
-reg[8:0] add_sub1a,      add_sub2a,      add_sub3a,      add_sub4a;
+reg[9:0] add_sub1a,      add_sub2a,      add_sub3a,      add_sub4a;
 reg[7:0] addsub1a_comp,  addsub2a_comp,  addsub3a_comp,  addsub4a_comp;
 reg      save_sign1a,    save_sign2a,    save_sign3a,    save_sign4a;
 reg[18:0] p1a,           p2a,            p3a,            p4a;
@@ -303,10 +303,10 @@ end
 
 always @ (posedge RST or posedge CLK) begin
   if (RST) begin
-    addsub1a_comp <= 9'b0; save_sign1a <= 1'b0;
+    addsub1a_comp <= 8'b0; save_sign1a <= 1'b0;
   end
   else begin
-    case (add_sub1a[8])
+    case (add_sub1a[9])
       1'b0: begin
         addsub1a_comp <= add_sub1a; save_sign1a <= 1'b0;
       end
@@ -319,10 +319,10 @@ end
 
 always @ (posedge RST or posedge CLK) begin
   if (RST) begin
-    addsub2a_comp <= 9'b0; save_sign2a <= 1'b0;
+    addsub2a_comp <= 8'b0; save_sign2a <= 1'b0;
   end
   else begin
-    case (add_sub2a[8])
+    case (add_sub2a[9])
       1'b0: begin
         addsub2a_comp <= add_sub2a; save_sign2a <= 1'b0;
       end
@@ -335,10 +335,10 @@ end
 
 always @ (posedge RST or posedge CLK) begin
   if (RST) begin
-    addsub3a_comp <= 9'b0; save_sign3a <= 1'b0;
+    addsub3a_comp <= 8'b0; save_sign3a <= 1'b0;
   end
   else begin
-    case (add_sub3a[8])
+    case (add_sub3a[9])
       1'b0: begin
         addsub3a_comp <= add_sub3a; save_sign3a <= 1'b0;
       end
@@ -354,7 +354,7 @@ always @ (posedge RST or posedge CLK) begin
     addsub4a_comp <= 8'b0; save_sign4a <= 1'b0;
   end
   else begin
-    case (add_sub4a[8])
+    case (add_sub4a[9])
       1'b0: begin
         addsub4a_comp <= add_sub4a; save_sign4a <= 1'b0;
       end
