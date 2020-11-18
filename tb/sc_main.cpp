@@ -9,7 +9,6 @@
 #include "verilated_vcd_sc.h"
 
 #include "Vdct.h"
-#include "sb.h"
 #include "mon.h"
 #include "drv.h"
 

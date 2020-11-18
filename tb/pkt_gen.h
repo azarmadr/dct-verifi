@@ -6,9 +6,6 @@
 #include <sstream>
 #include <vector>
 #include "pkt.h"
-using std::string;
-using std::vector;
-using std::stringstream;
 
 SC_MODULE(gen){
   SC_CTOR(gen){
@@ -20,7 +17,7 @@ SC_MODULE(gen){
   bool done;
   int error_p,matched_p,total_p,pkt_c;
 
-  vector <pkt*> pkt_v;
+  std::vector <pkt*> pkt_v;
   sc_port<sc_fifo_in_if <pkt*> > pkt_f;
   sc_port<sc_fifo_out_if<pkt*> > drv_f;
 
@@ -43,30 +40,34 @@ SC_MODULE(gen){
       91,-126, 118,-106,  91, -71,  49, -25,
     };
     if (gs.is_open()){
-      string  xin;
+      std::string  xin;
       while(getline(gs, xin)){
         pkt* p = new pkt;
-        stringstream stream(xin);
+        std::stringstream stream(xin);
         //_init_matrices
         for(int i=0;i<64;i++){
           stream >> p->xin[i];
-          //p->xin[i] = -27;
+          //p->xin[i]/=64;
+          p->xin[i] = 127;
           temp[i] = 0;
           z[i] = 0;
           p->dct[i] = 0;
         }
         //_1D_DCT
         for(int i=0;i<64;i++){
-          for(int j=0;j<8;j++) z[i] += c_t[j*8+i%8]*p->xin[(i/8)*8+j];
-          //z_out[i] = z[i].range(18,8);
-          //if(z[i][7]) z_out[i]++;
-          z_out[i] = z[i]/256;
+          for(int j=0;j<8;j++)
+            z[i] += c_t[j*8+i%8]*p->xin[(i/8)*8+j];
+          z_out[i] = z[i].range(18,8);
+          if(z[i][7]) z_out[i]++;
+          //z_out[i] = z[i]/256;
         }
         //_2D_DCT
         for(int i=0;i<64;i++){
-          for(int j=0;j<8;j++) temp[i] += c_t[j*8+i/8]*z_out[j*8+i%8];
+          for(int j=0;j<8;j++)
+            temp[i] += c_t[j*8+i/8]*z_out[j*8+i%8];
           p->dct[i] = temp[i].range(19,8);
           if(temp[i][7]) p->dct[i]++;
+          //p->dct[i] = temp[i]/256;
         }
         pkt_v.push_back(p);
       }
@@ -86,7 +87,7 @@ SC_MODULE(gen){
       if(*p == *pkt_v[i]) cout<<"seko"<<endl;
       cout<<*p << *pkt_v[i];
     }
-    cout<<"sb: "<<matched_p<<" with errors "<<error_p<<endl;
+    cout<<"gen: "<<matched_p<<" with errors "<<error_p<<endl;
     done = 1;
   }
   void drv_pkt(){

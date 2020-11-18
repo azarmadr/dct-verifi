@@ -53,7 +53,8 @@ SC_MODULE(gen){
         //_init_matrices
         for(int i=0;i<64;i++){
           stream >> p->xin[i];
-          //p->xin[i] = -27;
+          p->xin[i]/=16;
+          p->xin[i] = -27;
           temp[i] = 0;
           z[i] = 0;
           p->dct[i] = 0;
@@ -63,12 +64,14 @@ SC_MODULE(gen){
           for(int j=0;j<8;j++) z[i] += c_t[j*8+i%8]*p->xin[(i/8)*8+j];
           z_out[i] = z[i].range(18,8);
           if(z[i][7]) z_out[i]++;
+          z_out[i] = z[i]/256;
         }
         //_2D_DCT
         for(int i=0;i<64;i++){
           for(int j=0;j<8;j++) temp[i] += c_t[j*8+i/8]*z_out[j*8+i%8];
           p->dct[i] = temp[i].range(19,8);
           if(temp[i][7]) p->dct[i]++;
+          p->dct[i] = temp[i]/256;
         }
         pkt_v.push_back(p);
       }

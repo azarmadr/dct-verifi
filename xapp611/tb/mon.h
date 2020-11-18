@@ -22,7 +22,6 @@ SC_MODULE(mon){
       for(int i = 0;i<64;i++){
         wait(clk.posedge_event());
         p->dct[i] = dct->read();
-    cout<<endl<<sc_time_stamp()<<" mon: miteru";
       }
       pkt_q.push_back(p);
     }
