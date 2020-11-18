@@ -7,22 +7,19 @@ SC_MODULE(drv){
 
   sc_port<sc_fifo_in_if <pkt*> > drv_f;
 
-  void driver();
-
   SC_CTOR(drv){
     SC_THREAD(driver);
   }
-};
-void drv::driver(){
-  wait(rst.negedge_event());
-  wait(clk.posedge_event());
-  for(;;){
-    pkt* p = new (pkt);
-    p = drv_f->read();
-    //cout<<sc_time_stamp()<<*p;
-    for(int i=0;i<64;i++){
-      xin->write(p->xin[i]);
-      wait(clk.posedge_event());
+  void driver(){
+    wait(rst.negedge_event());
+    for(;;){
+      pkt* p = new (pkt);
+      p = drv_f->read();
+      //cout<<sc_time_stamp()<<*p;
+      for(int i=0;i<64;i++){
+        xin->write(p->xin[i]);
+        wait(clk.posedge_event());
+      }
     }
   }
-}
+};

@@ -20,6 +20,7 @@ int sc_main(int argc, char* argv[]) {
    sc_signal<bool>        rst;
    sc_signal<bool>        rdy_out;
    sc_signal<sc_bv< 8> >  xin;
+   sc_signal<sc_bv<11> >  z_out;
    sc_signal<sc_bv<12> >  dct_2d;
 
    sc_fifo<pkt*> drv_f(1),pkt_f(1);
@@ -30,6 +31,7 @@ int sc_main(int argc, char* argv[]) {
    top-> CLK(clk);
    top-> RST(rst);
    top-> xin(xin);
+   top-> z_out(z_out);
    top-> dct_2d(dct_2d);
    top-> rdy_out(rdy_out);
 
@@ -45,6 +47,7 @@ int sc_main(int argc, char* argv[]) {
    mon_t -> clk(clk);
    mon_t -> rst(rst);
    mon_t -> xin(xin);
+   mon_t -> z1d(z_out);
    mon_t -> dct(dct_2d);
    mon_t -> rdy_o(rdy_out);
 

@@ -26,7 +26,6 @@ SC_MODULE(gen){
     gs.open("../gs.txt",std::ios::in);
 
     sc_int<19> z[64];
-    sc_int<11> z_out[64];
     sc_int<20> temp [64];
 
     int c_t [64] = {
@@ -47,8 +46,7 @@ SC_MODULE(gen){
         //_init_matrices
         for(int i=0;i<64;i++){
           stream >> p->xin[i];
-          //p->xin[i]/=64;
-          p->xin[i] = 127;
+          p->xin[i]=i;
           temp[i] = 0;
           z[i] = 0;
           p->dct[i] = 0;
@@ -57,17 +55,15 @@ SC_MODULE(gen){
         for(int i=0;i<64;i++){
           for(int j=0;j<8;j++)
             z[i] += c_t[j*8+i%8]*p->xin[(i/8)*8+j];
-          z_out[i] = z[i].range(18,8);
-          if(z[i][7]) z_out[i]++;
-          //z_out[i] = z[i]/256;
+          p->z1d[i] = z[i].range(18,8);
+          if(z[i][7]) p->z1d[i]++;
         }
         //_2D_DCT
         for(int i=0;i<64;i++){
           for(int j=0;j<8;j++)
-            temp[i] += c_t[j*8+i/8]*z_out[j*8+i%8];
-          p->dct[i] = temp[i].range(19,8);
-          if(temp[i][7]) p->dct[i]++;
-          //p->dct[i] = temp[i]/256;
+            temp[i] += c_t[j*8+i/8]*p->z1d[j*8+i%8];
+          p->dct[(i%8)*8+i/8] = temp[i].range(19,8);
+          if(temp[i][7]) p->dct[(i%8)*8+i/8]++;
         }
         pkt_v.push_back(p);
       }
@@ -80,12 +76,12 @@ SC_MODULE(gen){
     for (int i=0;i<pkt_v.size();i++){
       wait(pkt_f->data_written_event());
       pkt* p = new pkt;
-        ++total_p;
+      ++total_p;
       p = pkt_f->read();
       if(*p == *pkt_v[i]) cout<<total_p<<"--"<<++matched_p<<"\t";
       else cout<<total_p<<"--"<<++error_p<<"\t";
       if(*p == *pkt_v[i]) cout<<"seko"<<endl;
-      cout<<*p << *pkt_v[i];
+      else cout<<*p << *pkt_v[i];
     }
     cout<<"gen: "<<matched_p<<" with errors "<<error_p<<endl;
     done = 1;
