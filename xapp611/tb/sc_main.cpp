@@ -62,21 +62,18 @@ int sc_main(int argc, char* argv[]) {
    Verilated::traceEverOn(true);
 
    rst= 1;
-   cout<<gen_t->pkt_v.size();
-   cout<<gen_t->done;
    sc_start(20,SC_NS);
-   rst= 0;
 
    cout<<"Enabling waves...\n";
-   cout<<"main: "<<gen_t->done;
    VerilatedVcdSc* tfp = new VerilatedVcdSc;
    top->trace (tfp, 9);
    tfp->open ("./vl.vcd");
 
    while(!gen_t->done){
-      tfp->flush();
+     rst= 0;
+     tfp->flush();
 
-      sc_start(1,SC_NS);
+     sc_start(1,SC_NS);
    }
 
    top->final();

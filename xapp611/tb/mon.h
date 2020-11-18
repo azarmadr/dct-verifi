@@ -28,10 +28,10 @@ SC_MODULE(mon){
   }
   void dct_m(){
     wait(rst.negedge_event());
-    wait(clk.posedge_event());
-    wait(940,SC_NS);
+    wait(rdy_i.posedge_event());
+    for(int i=0;i<93;i++)
+      wait(clk.posedge_event());
     for(;;){
-      cout<<"S";
       for(int i=0;i<64;i++){
         wait(clk.posedge_event());
         pkt_q.front()->xin[(i%8)*8+i/8]= idct_2d->read();

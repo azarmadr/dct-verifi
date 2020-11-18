@@ -131,7 +131,7 @@ reg[15:0] p1b,p2b,p3b,p4b,p5b,p6b,p7b,p8b;
 wire[35:0] p1b_all,p2b_all,p3b_all,p4b_all,p5b_all,p6b_all,p7b_all,p8b_all;
 reg[19:0] idct_2d_int1,idct_2d_int2,idct_2d_int3,idct_2d_int4;
 reg[19:0] idct_2d_int;
-//wire[7:0] idct_2d_rnd;
+wire[7:0] idct_2d_rnd;
 
 /*  1D-DCT BEGIN */
 
@@ -766,8 +766,8 @@ always @ (posedge CLK or posedge RST)
 To represent this we need only 8 bits, plus 1 bit for sign */
 
 //assign idct_2d = idct_2d_int[16:8];
-assign idct_2d = {idct_2d_int[19],idct_2d_int[14:8]};
-//assign idct_2d = idct_2d_int[7] ? (idct_2d_rnd + 1'b1) : idct_2d_rnd;
+assign idct_2d_rnd = {idct_2d_int[19],idct_2d_int[14:8]};
+assign idct_2d = idct_2d_int[7] ? (idct_2d_rnd + 1'b1) : idct_2d_rnd;
 
 endmodule
 

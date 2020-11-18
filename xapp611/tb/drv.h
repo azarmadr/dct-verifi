@@ -23,7 +23,7 @@ SC_MODULE(drv){
       for(int i=0;i<64;i++){
         dct_2d->write(p->dct[i]);
         wait(clk.posedge_event());
-    cout<<endl<<sc_time_stamp()<<" drv: taskeru "<<i;
+    //cout<<endl<<sc_time_stamp()<<" drv: taskeru "<<i;
       }
     }
   }

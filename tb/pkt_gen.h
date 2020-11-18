@@ -80,8 +80,7 @@ SC_MODULE(gen){
       p = pkt_f->read();
       if(*p == *pkt_v[i]) cout<<total_p<<"--"<<++matched_p<<"\t";
       else cout<<total_p<<"--"<<++error_p<<"\t";
-      if(*p == *pkt_v[i]) cout<<"seko"<<endl;
-      else cout<<*p << *pkt_v[i];
+      if(!(*p == *pkt_v[i])) cout<<*p << *pkt_v[i];
     }
     cout<<"gen: "<<matched_p<<" with errors "<<error_p<<endl;
     done = 1;
