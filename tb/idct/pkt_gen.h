@@ -51,7 +51,7 @@ SC_MODULE(gen){
         //_init_matrices
         for(int i=0;i<64;i++){
           stream >> p->dct[i];
-          //p->dct[i] = i+3;
+          //p->dct[i] = 7;
           temp[i] = 0;
           z[i] = 0;
           p->xin[i] = 0;

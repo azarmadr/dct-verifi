@@ -1,4 +1,4 @@
-PROJECT = dct
+PROJECT = idct
 default: V$(PROJECT)__ALL.a
 #
 # Constants...
@@ -18,11 +18,11 @@ VM_USER_CLASSES = \
 
 VM_USER_DIR = \
 
+CXXFLAGS += -g
 CPPFLAGS += -I..
 CPPFLAGS += -I.
-CPPFLAGS += -I$(SYSTEMC)/include
+CPPFLAGS += -I$(SYSTEMC_HOME)/include
 CPPFLAGS += -I$(VERILATOR_ROOT)/include
-#CPPFLAGS += -DVL_DEBUG
 
 OBJS     := $(wildcard *.o)
 LIBFLAGS  = -L$(SYSTEMC_HOME)/lib-linux64
@@ -32,11 +32,11 @@ include $(VERILATOR_ROOT)/include/verilated.mk
 
 ver: verilated.o verilated_vcd_c.o verilated_vcd_sc.o
 
-cppo:= $(foreach fl,$(wildcard ../../tb/*.cpp),$(subst ../../tb/, ,$(subst cpp,o,$(fl))))
+cppo:= $(foreach fl,$(wildcard ../../tb/$(PROJECT)/*.cpp),$(subst ../../tb/$(PROJECT)/, ,$(subst cpp,o,$(fl))))
 obj: $(cppo)
 .PHONY: cppo
 
-$(cppo): %.o: ../tb/%.cpp
+$(cppo): %.o: ../tb/$(PROJECT)/%.cpp
 	 $(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 fin:
